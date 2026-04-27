@@ -185,6 +185,7 @@
             </div>
           </div>
           <button class="btn btn-gold" id="gen-btn" onclick="generateContent()" disabled style="width:100%;opacity:.5">✨ Generate caption + hashtags</button>
+          <button class="btn btn-outline" id="process-btn" onclick="processPhoto()" disabled style="width:100%;opacity:.5">🖼️ Retouch photo via backend</button>
         </div>
         <div id="gen-output">
           <div style="text-align:center;padding:40px 16px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px">
@@ -320,6 +321,9 @@
 </div>
 
 <script>
+// ─── Backend ──────────────────────────────────────────────────────────────────
+const BACKEND_URL = "https://thetruebeauty-backend.up.railway.app";
+
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
   selectedFile: null, platform: 'instagram', lang: 'vi+en',
@@ -433,7 +437,12 @@ function updateCreateUI(){
     document.getElementById('file-name').textContent=f.name;
     document.getElementById('file-type').textContent=f.type==='video'?'Video':'Photo';
     btn.disabled=false; btn.style.opacity='1';
-  } else { btn.disabled=true; btn.style.opacity='.5'; }
+    const pb=document.getElementById('process-btn');
+    if(pb){ pb.disabled=false; pb.style.opacity='1'; }
+  } else { btn.disabled=true; btn.style.opacity='.5';
+    const pb=document.getElementById('process-btn');
+    if(pb){ pb.disabled=true; pb.style.opacity='.5'; }
+  }
 }
 
 // ─── Generate ─────────────────────────────────────────────────────────────────
@@ -537,6 +546,41 @@ async function generateAltText(){
     const t=(data?.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
     el.textContent=t; document.getElementById('alt-len').textContent=`${t.length}/125 characters`;
   } catch(e){ el.textContent='Error: '+e.message; }
+}
+
+async function processPhoto(){
+  if(!state.selectedFile) return;
+  const out=document.getElementById('gen-output');
+  out.innerHTML='<div style="text-align:center;padding:40px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px"><div style="font-size:24px;margin-bottom:8px">🖼️</div><div style="font-size:13px;color:var(--warm-mid)">Retouching photo via backend...</div></div>';
+  try{
+    const formData = new FormData();
+    formData.append('file', new Blob([JSON.stringify(state.selectedFile)], {type:'application/json'}), state.selectedFile.name);
+    formData.append('generate_caption','true');
+    formData.append('platform', state.platform);
+    formData.append('lang', state.lang);
+    const res = await fetch(`${BACKEND_URL}/process-photo`, {method:'POST', body: formData});
+    const data = await res.json();
+    if(data.success){
+      out.innerHTML=`
+        <div class="notice notice-ok">✅ Photo processed successfully!</div>
+        <div class="card-sm" style="margin-bottom:10px">
+          <div style="font-size:12px;font-weight:500;margin-bottom:8px">☁️ Cloudinary URL</div>
+          <a href="${data.cloudinary_url}" target="_blank" style="font-size:11px;color:var(--info);word-break:break-all">${data.cloudinary_url}</a>
+          <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="copyText('${data.cloudinary_url}',this)">Copy URL</button>
+        </div>
+        <div class="card-sm" style="margin-bottom:10px">
+          <div style="font-size:12px;font-weight:500;margin-bottom:6px">✨ Enhancements applied</div>
+          ${(data.enhancements_applied||[]).map(e=>`<div style="font-size:11px;color:var(--warm-mid);margin-bottom:3px">• ${e}</div>`).join('')}
+        </div>
+        ${data.caption?`<div class="card-sm">
+          <div style="font-size:12px;font-weight:500;margin-bottom:8px">📝 Generated caption</div>
+          <p style="font-size:13px;line-height:1.7">${escHtml(data.caption.caption_primary||'')}</p>
+          <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="copyText('${escStr(data.caption.caption_primary||'')}',this)">Copy</button>
+        </div>`:''}`;
+    } else {
+      out.innerHTML=`<div class="notice notice-warn">❌ Error: ${data.error}</div>`;
+    }
+  } catch(e){ out.innerHTML=`<div class="notice notice-warn">❌ Connection error: ${e.message}</div>`; }
 }
 
 function copyText(text,btn){ navigator.clipboard.writeText(text).catch(()=>{}); const o=btn.textContent; btn.textContent='✓ Copied'; btn.style.color='var(--success)'; setTimeout(()=>{ btn.textContent=o; btn.style.color=''; },2000); }
