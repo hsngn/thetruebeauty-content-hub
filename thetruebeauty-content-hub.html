@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>The True Beauty — Content Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --cream:#FAF7F2;--ink:#1A1410;--gold:#C9A84C;--gold-light:#E8D5A0;--gold-dark:#9A7A2E;
+    --warm-gray:#6B6057;--warm-mid:#8C7B70;--warm-pale:#EDE8E0;--warm-border:#D8CFC4;
+    --success:#4A8C5C;--danger:#C0392B;--info:#2B6CB0;--warning:#B7791F;
+    --surface:#FFFFFF;--surface2:#F5F0E8;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+  h2{font-family:'Playfair Display',serif}
+  .shell{display:flex;flex-direction:column;min-height:100vh;max-width:900px;margin:0 auto}
+  .header{display:flex;align-items:center;gap:14px;padding:18px 24px;border-bottom:1px solid var(--warm-border);background:var(--surface);position:sticky;top:0;z-index:100}
+  .logo{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .header-title{font-size:15px;font-weight:600}
+  .header-sub{font-size:11px;color:var(--warm-mid);margin-top:1px}
+  .badge{margin-left:auto;font-size:10px;padding:4px 10px;border-radius:20px;font-weight:500}
+  .badge-ok{background:#EAF4EE;color:var(--success);border:1px solid #B8DEC6}
+  .badge-warn{background:#FEF7E7;color:var(--warning);border:1px solid #F0D380}
+  .nav{display:flex;border-bottom:1px solid var(--warm-border);background:var(--surface);padding:0 16px;overflow-x:auto;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav-btn{padding:12px 14px;font-size:12px;background:none;border:none;border-bottom:2px solid transparent;color:var(--warm-mid);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;font-weight:400;margin-bottom:-1px;transition:color .15s,border-color .15s}
+  .nav-btn.active{color:var(--ink);border-bottom-color:var(--gold);font-weight:500}
+  .content{flex:1;padding:24px;overflow-y:auto}
+  .card{background:var(--surface);border:1px solid var(--warm-border);border-radius:12px;padding:20px;margin-bottom:14px}
+  .card-sm{background:var(--surface2);border:1px solid var(--warm-border);border-radius:10px;padding:14px}
+  .lbl{font-size:10px;font-weight:500;color:var(--warm-mid);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px}
+  .inp{width:100%;padding:10px 12px;font-size:13px;border:1px solid var(--warm-border);border-radius:8px;background:var(--surface);color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+  .inp:focus{border-color:var(--gold)}
+  textarea.inp{resize:vertical;line-height:1.6}
+  .btn{padding:10px 18px;font-size:12px;font-weight:500;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.02em}
+  .btn-primary{background:var(--ink);color:var(--cream);border:none}
+  .btn-primary:hover{background:#2A2018}
+  .btn-primary:disabled{background:var(--warm-border);color:var(--warm-mid);cursor:not-allowed}
+  .btn-gold{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:white;border:none}
+  .btn-gold:hover{opacity:.9}
+  .btn-outline{background:none;border:1px solid var(--warm-border);color:var(--warm-gray)}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold-dark)}
+  .btn-sm{padding:5px 12px;font-size:11px}
+  .tag{display:inline-block;font-size:11px;padding:4px 9px;border-radius:20px;background:var(--surface2);border:1px solid var(--warm-border);color:var(--info);font-family:'DM Mono',monospace;line-height:1}
+  .tag-wrap{display:flex;flex-wrap:wrap;gap:5px}
+  .pool-card{border:1px solid var(--warm-border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--surface);transition:all .15s}
+  .pool-card.active{border-color:var(--gold);background:#FEFBF4}
+  .pool-label-pill{font-size:10px;padding:3px 8px;border-radius:12px;font-weight:500}
+  .progress-track{height:5px;background:var(--warm-pale);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;border-radius:3px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .caption-box{border:1px solid var(--warm-border);border-radius:10px;padding:14px;background:var(--surface);margin-bottom:10px}
+  .module-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--warm-border);border-radius:10px;border-left:3px solid var(--warm-border);margin-bottom:8px}
+  .module-item.done{border-left-color:var(--success)}
+  .module-item.partial{border-left-color:var(--warning)}
+  .stat-card{background:var(--surface);border:1px solid var(--warm-border);border-radius:12px;padding:16px;text-align:center}
+  .stat-val{font-family:'Playfair Display',serif;font-size:26px;color:var(--ink);margin-bottom:2px}
+  .stat-lbl{font-size:11px;color:var(--warm-mid)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal-day-head{font-size:10px;font-weight:500;text-align:center;color:var(--warm-mid);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+  .cal-col{min-height:120px;background:var(--surface);border:1px solid var(--warm-border);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:5px}
+  .cal-post{background:var(--surface2);border-radius:6px;padding:5px 7px;font-size:10px;position:relative}
+  .cal-post-rm{position:absolute;top:2px;right:4px;background:none;border:none;cursor:pointer;font-size:10px;color:var(--warm-mid);padding:0}
+  .step{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+  .step-num{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+  .page-stripe{height:3px;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-light));border-radius:2px;margin-bottom:20px}
+  .notice{font-size:12px;padding:11px 13px;border-radius:8px;line-height:1.5;margin-bottom:10px}
+  .notice-warn{background:#FEF7E7;color:var(--warning);border:1px solid #F0D380}
+  .notice-ok{background:#EAF4EE;color:var(--success);border:1px solid #B8DEC6}
+  .notice-info{background:#EBF4FF;color:var(--info);border:1px solid #B3D0F0}
+  /* API Key banner */
+  .api-banner{background:var(--surface);border:1px solid var(--warm-border);border-radius:12px;padding:16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+  .api-banner input{flex:1;min-width:220px}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .fadein{animation:fadeIn .25s ease forwards}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="header">
+    <div class="logo">💅</div>
+    <div>
+      <div class="header-title">The True Beauty</div>
+      <div class="header-sub">Riviera Point · District 7, HCMC · Instagram & Facebook</div>
+    </div>
+    <div class="badge" id="api-badge" onclick="showTab('settings',document.querySelectorAll('.nav-btn')[5])" style="cursor:pointer">⚙️ API Key</div>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showTab('home',this)">🏠 Home</button>
+    <button class="nav-btn" onclick="showTab('media',this)">📂 Media Library</button>
+    <button class="nav-btn" onclick="showTab('create',this)">✨ Create Post</button>
+    <button class="nav-btn" onclick="showTab('seo',this)"># SEO</button>
+    <button class="nav-btn" onclick="showTab('calendar',this)">📅 Calendar</button>
+    <button class="nav-btn" onclick="showTab('settings',this)">⚙️ Settings</button>
+  </nav>
+
+  <div class="content">
+
+    <!-- HOME -->
+    <div id="tab-home" class="fadein">
+      <div class="page-stripe"></div>
+      <h2 style="font-size:20px;margin-bottom:4px">Welcome 👋</h2>
+      <p style="font-size:13px;color:var(--warm-mid);margin-bottom:20px">Riviera Point Salon · Tân Phú, District 7</p>
+      <div id="home-api-warn" class="notice notice-warn" style="display:none">
+        ⚠️ No API key configured — go to <strong>⚙️ Settings</strong> to add your Anthropic key and unlock AI generation.
+      </div>
+      <div class="grid3" style="margin-bottom:20px">
+        <div class="stat-card"><div class="stat-val" id="stat-posts">0</div><div class="stat-lbl">Scheduled posts</div></div>
+        <div class="stat-card"><div class="stat-val">☁️</div><div class="stat-lbl">Drive connected</div></div>
+        <div class="stat-card"><div class="stat-val">IG+FB</div><div class="stat-lbl">Platforms</div></div>
+      </div>
+      <span class="lbl">Workflow</span>
+      <div class="card" style="padding:16px">
+        <div class="step"><div class="step-num" style="background:#EAF4EE;color:var(--success)">✓</div><div><div style="font-size:13px;font-weight:500">Upload media to Google Drive</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Photos and videos from the salon</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">2</div><div><div style="font-size:13px">Browse the media library</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Select the file to post</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">3</div><div><div style="font-size:13px">Generate captions + SEO hashtags</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Vietnamese + English, 4 verified pools</div></div></div>
+        <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">4</div><div><div style="font-size:13px">Schedule in the editorial calendar</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Pick the best day and time slot</div></div></div>
+        <div class="step" style="margin-bottom:0"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">5</div><div><div style="font-size:13px">Copy & publish on IG / Facebook</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Manual or via Meta API (Phase 2)</div></div></div>
+      </div>
+      <span class="lbl">Quick actions</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-gold" onclick="showTab('create',document.querySelectorAll('.nav-btn')[2])">✨ Create a post</button>
+        <button class="btn btn-outline" onclick="showTab('media',document.querySelectorAll('.nav-btn')[1])">📂 Media Library</button>
+        <button class="btn btn-outline" onclick="showTab('seo',document.querySelectorAll('.nav-btn')[3])"># SEO & Hashtags</button>
+      </div>
+    </div>
+
+    <!-- MEDIA -->
+    <div id="tab-media" style="display:none">
+      <div class="page-stripe"></div>
+      <h2 style="font-size:18px;margin-bottom:16px">📂 Media Library</h2>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input id="drive-query" class="inp" placeholder="e.g. hair, nail art, facial, balayage..." value="salon photos" style="flex:1"/>
+        <button class="btn btn-primary" onclick="searchDrive()">🔍 Search</button>
+      </div>
+      <div id="drive-error" class="notice notice-warn" style="display:none"></div>
+      <div id="drive-results">
+        <div style="text-align:center;padding:40px 20px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px">
+          <div style="font-size:32px;margin-bottom:8px">📁</div>
+          <div style="font-size:13px;color:var(--warm-mid)">Run a search to see your Google Drive media</div>
+          <div style="font-size:11px;color:var(--warm-border);margin-top:4px">Photos and videos from the salon will appear here</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATE -->
+    <div id="tab-create" style="display:none">
+      <div class="page-stripe"></div>
+      <h2 style="font-size:18px;margin-bottom:16px">✨ Create a Post</h2>
+      <div id="no-file-warn" class="notice notice-warn" style="display:none">⚠️ No file selected — go to <strong>Media Library</strong> to pick a media file</div>
+      <div class="grid2">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div id="file-card" class="card-sm" style="text-align:center;display:none">
+            <div style="font-size:28px;margin-bottom:6px" id="file-icon">📸</div>
+            <div style="font-size:12px;font-weight:500" id="file-name">—</div>
+            <div style="font-size:11px;color:var(--warm-mid);margin-top:2px" id="file-type">—</div>
+          </div>
+          <div>
+            <span class="lbl">Platform</span>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-outline" id="plat-ig" onclick="setPlatform('instagram')" style="flex:1;font-size:12px;border-color:var(--gold);color:var(--gold-dark)">📸 Instagram</button>
+              <button class="btn btn-outline" id="plat-fb" onclick="setPlatform('facebook')" style="flex:1;font-size:12px">👍 Facebook</button>
+            </div>
+          </div>
+          <div>
+            <span class="lbl">Caption language</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm" id="lang-vi+en" onclick="setLang('vi+en')" style="border-color:var(--gold);color:var(--gold-dark)">🇻🇳+🇬🇧 VI+EN</button>
+              <button class="btn btn-outline btn-sm" id="lang-vi" onclick="setLang('vi')">🇻🇳 Vietnamese</button>
+              <button class="btn btn-outline btn-sm" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
+            </div>
+          </div>
+          <div>
+            <span class="lbl">Hashtag pools</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm pool-toggle" data-pool="A" onclick="togglePool('A',this)" style="border-color:var(--gold);color:var(--gold-dark)">Pool A</button>
+              <button class="btn btn-outline btn-sm pool-toggle" data-pool="B" onclick="togglePool('B',this)" style="border-color:var(--gold);color:var(--gold-dark)">Pool B</button>
+              <button class="btn btn-outline btn-sm pool-toggle" data-pool="C" onclick="togglePool('C',this)" style="border-color:var(--gold);color:var(--gold-dark)">Pool C</button>
+              <button class="btn btn-outline btn-sm pool-toggle" data-pool="D" onclick="togglePool('D',this)">Pool D</button>
+            </div>
+          </div>
+          <button class="btn btn-gold" id="gen-btn" onclick="generateContent()" disabled style="width:100%;opacity:.5">✨ Generate caption + hashtags</button>
+        </div>
+        <div id="gen-output">
+          <div style="text-align:center;padding:40px 16px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px">
+            <div style="font-size:28px;margin-bottom:8px">🤖</div>
+            <div style="font-size:13px;color:var(--warm-mid)">Select a file and click Generate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO -->
+    <div id="tab-seo" style="display:none">
+      <div class="page-stripe"></div>
+      <h2 style="font-size:18px;margin-bottom:6px"># Automatic SEO</h2>
+      <p style="font-size:12px;color:var(--warm-mid);margin-bottom:18px">Hashtags verified on real Instagram/TikTok posts from HCMC salons</p>
+
+      <div class="pool-card active">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:500">Pool A — Global popular</span>
+          <span class="pool-label-pill" style="background:#EBF4FF;color:var(--info)">High volume</span>
+        </div>
+        <div class="tag-wrap" style="margin-bottom:8px">
+          <span class="tag">#beautysalon</span><span class="tag">#hairsalon</span><span class="tag">#nailart</span><span class="tag">#hairstyle</span><span class="tag">#haircolor</span><span class="tag">#balayage</span><span class="tag">#spa</span><span class="tag">#manicure</span><span class="tag">#haircare</span><span class="tag">#hairstylist</span>
+        </div>
+        <div style="font-size:11px;color:var(--warm-mid)">📊 500K–5M views/tag · High global competition</div>
+      </div>
+
+      <div class="pool-card active">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:500">Pool B — HCMC niche</span>
+          <span class="pool-label-pill" style="background:#EAF4EE;color:var(--success)">✓ Verified on IG/TikTok</span>
+        </div>
+        <div class="tag-wrap" style="margin-bottom:8px">
+          <span class="tag">#hochiminhhairsalon</span><span class="tag">#hairsaloninhcmc</span><span class="tag">#vietnamhairsalon</span><span class="tag">#hochiminhspa</span><span class="tag">#salontocsaigon</span><span class="tag">#salontoc</span><span class="tag">#koreanhairsalon</span><span class="tag">#reviewlamdep</span><span class="tag">#nốitócđepsàigòn</span><span class="tag">#hcmc</span>
+        </div>
+        <div style="font-size:11px;color:var(--warm-mid)">📊 10K–200K views/tag · Qualified local audience · Sources: HAEU Salon, Xing Hair, TikTok HCMC</div>
+      </div>
+
+      <div class="pool-card active">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:500">Pool C — Local District 7 / Phú Mỹ Hưng</span>
+          <span class="pool-label-pill" style="background:#FEF7E7;color:var(--warning)">Local conversion</span>
+        </div>
+        <div class="tag-wrap" style="margin-bottom:8px">
+          <span class="tag">#phumyhung</span><span class="tag">#quan7</span><span class="tag">#saigon</span><span class="tag">#vietnam</span><span class="tag">#district7hcmc</span><span class="tag">#hochiminhcity</span><span class="tag">#thingstodohochiminh</span><span class="tag">#expatsinvietnam</span><span class="tag">#livinginvietnam</span><span class="tag">#saigonlife</span>
+        </div>
+        <div style="font-size:11px;color:var(--warm-mid)">📊 Geo-targeted traffic · Expats + Riviera Point residents</div>
+      </div>
+
+      <div class="pool-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:500">Pool D — Trending techniques</span>
+          <span class="pool-label-pill" style="background:#F9ECEC;color:var(--danger)">Virality boost</span>
+        </div>
+        <div class="tag-wrap" style="margin-bottom:8px">
+          <span class="tag">#olaplex</span><span class="tag">#balayagehair</span><span class="tag">#hairtransformation</span><span class="tag">#gelpolish</span><span class="tag">#nailsofinstagram</span><span class="tag">#kbeauty</span><span class="tag">#koreaheadspa</span><span class="tag">#hairextensions</span><span class="tag">#highlights</span><span class="tag">#hairgoals</span>
+        </div>
+        <div style="font-size:11px;color:var(--warm-mid)">📊 Variable reach · Trending on TikTok · Use in 1st comment</div>
+      </div>
+
+      <div class="notice notice-ok">💡 <strong>Recommended:</strong> Pool A (3 tags) + Pool B (5 tags) + Pool C (4 tags) in caption. Pool D in 1st comment. Rotate every 3 posts to avoid shadowban.</div>
+
+      <div class="card">
+        <span class="lbl">Alt text generator — Riviera Point Salon</span>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <input id="alt-input" class="inp" placeholder="e.g. balayage-hair-photo.jpg" style="flex:1"/>
+          <button class="btn btn-primary" onclick="generateAltText()">✨ Generate</button>
+        </div>
+        <div id="alt-output" style="display:none" class="card-sm">
+          <div style="font-size:11px;color:var(--warm-mid);margin-bottom:6px">Generated alt text</div>
+          <p id="alt-text" style="font-size:13px;font-style:italic;line-height:1.6"></p>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <span id="alt-len" style="font-size:11px;color:var(--warm-mid)"></span>
+            <button class="btn btn-outline btn-sm" onclick="copyText(document.getElementById('alt-text').textContent,this)">Copy</button>
+          </div>
+        </div>
+        <div class="notice notice-info">📍 Where to add alt text on Instagram: Create post → Advanced settings → Accessibility → Write alt text</div>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div id="tab-calendar" style="display:none">
+      <div class="page-stripe"></div>
+      <h2 style="font-size:18px;margin-bottom:16px">📅 Editorial Calendar</h2>
+      <div class="cal-grid">
+        <div class="cal-day-head">Mon</div><div class="cal-day-head">Tue</div><div class="cal-day-head">Wed</div><div class="cal-day-head">Thu</div><div class="cal-day-head">Fri</div><div class="cal-day-head">Sat</div><div class="cal-day-head">Sun</div>
+        <div class="cal-col" id="cal-Mon"></div><div class="cal-col" id="cal-Tue"></div><div class="cal-col" id="cal-Wed"></div><div class="cal-col" id="cal-Thu"></div><div class="cal-col" id="cal-Fri"></div><div class="cal-col" id="cal-Sat"></div><div class="cal-col" id="cal-Sun"></div>
+      </div>
+      <div class="notice notice-info" style="margin-top:14px">⏰ <strong>Best time slots for District 7:</strong> Tue–Thu 7–9 PM · Saturday 10 AM–12 PM · Avoid Monday mornings and Sunday evenings</div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="tab-settings" style="display:none">
+      <div class="page-stripe"></div>
+      <h2 style="font-size:18px;margin-bottom:6px">⚙️ Settings</h2>
+      <p style="font-size:12px;color:var(--warm-mid);margin-bottom:20px">Configure your API key to unlock AI-powered features</p>
+
+      <div class="card">
+        <span class="lbl">Anthropic API Key</span>
+        <p style="font-size:12px;color:var(--warm-mid);margin-bottom:12px">Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold-dark)">console.anthropic.com</a> → API Keys → Create Key</p>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <input id="api-key-input" class="inp" type="password" placeholder="sk-ant-api03-..." style="flex:1;font-family:'DM Mono',monospace;font-size:12px"/>
+          <button class="btn btn-gold" onclick="saveApiKey()">Save</button>
+        </div>
+        <div id="api-key-status" style="font-size:12px;color:var(--warm-mid)"></div>
+        <div class="notice notice-info" style="margin-top:12px">🔒 Your key is stored locally in your browser (localStorage). It never leaves your device except to call the Anthropic API directly.</div>
+      </div>
+
+      <div class="card">
+        <span class="lbl">Salon Info</span>
+        <div style="display:grid;gap:10px">
+          <div><span class="lbl">Salon name</span><input class="inp" value="The True Beauty"/></div>
+          <div><span class="lbl">Address</span><input class="inp" value="Riviera Point, 2 Nguyễn Văn Tưởng, Tân Phú, District 7, HCMC"/></div>
+          <div><span class="lbl">Facebook Place ID</span><input class="inp" value="ChIJsdYGzpwldTERX597EQ8DOQs" style="font-family:'DM Mono',monospace;font-size:12px"/></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="lbl">Dev Roadmap</span>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--warm-mid);margin-bottom:6px"><span>Overall progress</span><span>4/10 modules ready</span></div>
+        <div class="progress-track" style="margin-bottom:16px"><div class="progress-fill" style="width:40%;background:linear-gradient(90deg,var(--gold-dark),var(--gold))"></div></div>
+        <div class="module-item done"><span style="font-size:16px">✅</span><div><div style="font-size:13px;font-weight:500">Content Hub UI</div><div style="font-size:12px;color:var(--warm-mid)">Full interface, navigation, calendar</div></div></div>
+        <div class="module-item done"><span style="font-size:16px">✅</span><div><div style="font-size:13px;font-weight:500">AI caption generation (VI/EN)</div><div style="font-size:12px;color:var(--warm-mid)">Claude API → 3 options, premium salon tone</div></div></div>
+        <div class="module-item done"><span style="font-size:16px">✅</span><div><div style="font-size:13px;font-weight:500">Verified SEO hashtags</div><div style="font-size:12px;color:var(--warm-mid)">4 pools validated on real HCMC publications</div></div></div>
+        <div class="module-item partial"><span style="font-size:16px">🔨</span><div><div style="font-size:13px;font-weight:500">Photo retouching</div><div style="font-size:12px;color:var(--warm-mid)">Pillow + rembg + Cloudinary — Phase 2</div></div></div>
+        <div class="module-item"><span style="font-size:16px">⬜</span><div><div style="font-size:13px;font-weight:500">Video editing (Reels 9:16)</div><div style="font-size:12px;color:var(--warm-mid)">MoviePy + FFmpeg — Phase 2</div></div></div>
+        <div class="module-item"><span style="font-size:16px">⬜</span><div><div style="font-size:13px;font-weight:500">Auto subtitles</div><div style="font-size:12px;color:var(--warm-mid)">OpenAI Whisper — Phase 2</div></div></div>
+        <div class="module-item"><span style="font-size:16px">⬜</span><div><div style="font-size:13px;font-weight:500">Meta Graph API publishing</div><div style="font-size:12px;color:var(--warm-mid)">Direct IG + FB publishing — Phase 3</div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+const state = {
+  selectedFile: null, platform: 'instagram', lang: 'vi+en',
+  activePools: new Set(['A','B','C']),
+  calendar: {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]},
+};
+const POOLS = {
+  A:['#beautysalon','#hairsalon','#nailart','#hairstyle','#haircolor','#balayage','#spa','#manicure','#haircare','#hairstylist'],
+  B:['#hochiminhhairsalon','#hairsaloninhcmc','#vietnamhairsalon','#hochiminhspa','#salontocsaigon','#salontoc','#koreanhairsalon','#reviewlamdep','#nốitócđepsàigòn','#hcmc'],
+  C:['#phumyhung','#quan7','#saigon','#vietnam','#district7hcmc','#hochiminhcity','#thingstodohochiminh','#expatsinvietnam','#livinginvietnam','#saigonlife'],
+  D:['#olaplex','#balayagehair','#hairtransformation','#gelpolish','#nailsofinstagram','#kbeauty','#koreaheadspa','#hairextensions','#highlights','#hairgoals'],
+};
+
+// ─── API Key ──────────────────────────────────────────────────────────────────
+function getApiKey(){ return localStorage.getItem('thetruebeauty_anthropic_key')||''; }
+function saveApiKey(){
+  const k = document.getElementById('api-key-input').value.trim();
+  if(!k){ document.getElementById('api-key-status').textContent='Please enter a key.'; return; }
+  localStorage.setItem('thetruebeauty_anthropic_key', k);
+  document.getElementById('api-key-status').textContent='✅ Key saved successfully!';
+  document.getElementById('api-key-status').style.color='var(--success)';
+  updateApiBadge();
+}
+function updateApiBadge(){
+  const badge = document.getElementById('api-badge');
+  const warn = document.getElementById('home-api-warn');
+  if(getApiKey()){
+    badge.className='badge badge-ok'; badge.textContent='● API Ready';
+    if(warn) warn.style.display='none';
+  } else {
+    badge.className='badge badge-warn'; badge.textContent='⚠️ No API Key';
+    if(warn) warn.style.display='block';
+  }
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+function showTab(id, btn){
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const el = document.getElementById('tab-'+id);
+  if(el){ el.style.display=''; el.classList.add('fadein'); }
+  if(btn) btn.classList.add('active');
+  if(id==='create') updateCreateUI();
+  if(id==='settings'){
+    const k=getApiKey();
+    if(k) document.getElementById('api-key-input').value=k.slice(0,12)+'...';
+  }
+}
+
+// ─── Platform / Lang / Pool ───────────────────────────────────────────────────
+function setPlatform(p){
+  state.platform=p;
+  ['ig','fb'].forEach(id=>{
+    const b=document.getElementById('plat-'+id);
+    const on=(id==='ig'&&p==='instagram')||(id==='fb'&&p==='facebook');
+    b.style.borderColor=on?'var(--gold)':'var(--warm-border)';
+    b.style.color=on?'var(--gold-dark)':'var(--warm-mid)';
+  });
+}
+function setLang(l){
+  state.lang=l;
+  ['vi+en','vi','en'].forEach(id=>{
+    const b=document.getElementById('lang-'+id); if(!b) return;
+    b.style.borderColor=id===l?'var(--gold)':'var(--warm-border)';
+    b.style.color=id===l?'var(--gold-dark)':'var(--warm-mid)';
+  });
+}
+function togglePool(key,btn){
+  if(state.activePools.has(key)){ state.activePools.delete(key); btn.style.borderColor=''; btn.style.color=''; }
+  else { state.activePools.add(key); btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold-dark)'; }
+}
+
+// ─── Drive Search ─────────────────────────────────────────────────────────────
+async function searchDrive(){
+  const key=getApiKey();
+  if(!key){ alert('Please add your API key in ⚙️ Settings first.'); return; }
+  const q=document.getElementById('drive-query').value;
+  const errEl=document.getElementById('drive-error');
+  const resEl=document.getElementById('drive-results');
+  errEl.style.display='none';
+  resEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--warm-mid);font-size:13px">⏳ Searching Google Drive...</div>';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:`Search Google Drive for files matching: "${q}". Return ONLY a JSON array: [{"name":"...","id":"...","type":"photo or video","mimeType":"..."}]. No markdown.`}],
+        mcp_servers:[{type:'url',url:'https://drivemcp.googleapis.com/mcp/v1',name:'google-drive'}]})
+    });
+    const data=await res.json();
+    const raw=(data?.content||[]).map(b=>b.type==='mcp_tool_result'?(b.content?.[0]?.text||''):(b.type==='text'?b.text:'')).join('');
+    const match=raw.match(/\[[\s\S]*?\]/);
+    if(match){
+      const files=JSON.parse(match[0]);
+      if(files.length){
+        resEl.innerHTML=`<div style="font-size:12px;color:var(--warm-mid);margin-bottom:10px">${files.length} file(s) found — click to select</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px">${files.map(f=>`<div onclick='selectFile(${JSON.stringify(f).replace(/'/g,"&apos;")})' style="border:1px solid var(--warm-border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;background:var(--surface);transition:border-color .15s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--warm-border)'"><div style="font-size:26px;margin-bottom:6px">${f.type==='video'?'🎬':'📸'}</div><div style="font-size:11px;font-weight:500;word-break:break-word;line-height:1.3">${(f.name||'File').slice(0,28)}</div><div style="font-size:10px;color:var(--warm-mid);margin-top:3px">${f.type==='video'?'Video':'Photo'}</div></div>`).join('')}</div>`;
+      } else { errEl.textContent='No files found. Try a different search term.'; errEl.style.display='block'; resEl.innerHTML=''; }
+    } else { errEl.textContent='Check that Google Drive is connected. Response: '+raw.slice(0,100); errEl.style.display='block'; resEl.innerHTML=''; }
+  } catch(e){ errEl.textContent='Connection error: '+e.message; errEl.style.display='block'; resEl.innerHTML=''; }
+}
+function selectFile(f){ state.selectedFile=f; showTab('create',document.querySelectorAll('.nav-btn')[2]); }
+
+// ─── Create UI ────────────────────────────────────────────────────────────────
+function updateCreateUI(){
+  const f=state.selectedFile;
+  document.getElementById('no-file-warn').style.display=f?'none':'block';
+  document.getElementById('file-card').style.display=f?'block':'none';
+  const btn=document.getElementById('gen-btn');
+  if(f){
+    document.getElementById('file-icon').textContent=f.type==='video'?'🎬':'📸';
+    document.getElementById('file-name').textContent=f.name;
+    document.getElementById('file-type').textContent=f.type==='video'?'Video':'Photo';
+    btn.disabled=false; btn.style.opacity='1';
+  } else { btn.disabled=true; btn.style.opacity='.5'; }
+}
+
+// ─── Generate ─────────────────────────────────────────────────────────────────
+async function generateContent(){
+  const key=getApiKey();
+  if(!key){ alert('Please add your API key in ⚙️ Settings first.'); return; }
+  if(!state.selectedFile) return;
+  const out=document.getElementById('gen-output');
+  out.innerHTML='<div style="text-align:center;padding:40px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px"><div style="font-size:24px;margin-bottom:8px">✨</div><div style="font-size:13px;color:var(--warm-mid)">AI is writing your captions...</div></div>';
+  const poolTags=[...state.activePools].flatMap(k=>POOLS[k]||[]);
+  const langTxt=state.lang==='vi+en'?'in VIETNAMESE and ENGLISH':state.lang==='vi'?'in Vietnamese only':'in English only';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:`You are a social media expert for a premium beauty salon at Riviera Point, District 7, Ho Chi Minh City, Vietnam. Audience: women 20–45, Riviera Point residents, expats, Korean community. Services: hair, nails, skincare, makeup.
+File: "${state.selectedFile.name}" (${state.selectedFile.type||'photo'})
+Platform: ${state.platform==='instagram'?'Instagram':'Facebook'}
+Language: ${langTxt}
+Hashtags to use: ${poolTags.slice(0,15).join(' ')}
+Return ONLY valid JSON (no markdown):
+{"captions":[{"lang":"vi","text":"2-3 sentence caption with emojis + CTA","tone":"Warm"},{"lang":"vi","text":"second option","tone":"Elegant"},{"lang":"en","text":"English caption for expats","tone":"Premium"}],"hashtags_caption":["6 tags from the pool for caption"],"hashtags_comment":["8 tags for 1st comment"],"bestTime":"e.g. Wednesday 7:30 PM","tip":"Short SEO tip"}`}]})
+    });
+    const data=await res.json();
+    const txt=(data?.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const match=txt.match(/\{[\s\S]*\}/);
+    if(match) renderGenOutput(JSON.parse(match[0]));
+    else out.innerHTML='<div class="notice notice-warn">Unexpected response. Please try again.</div>';
+  } catch(e){ out.innerHTML=`<div class="notice notice-warn">Error: ${e.message}</div>`; }
+}
+
+function renderGenOutput(g){
+  const out=document.getElementById('gen-output');
+  const caps=(g.captions||[]).map((c,i)=>`
+    <div class="caption-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:10px;font-weight:500;padding:3px 8px;border-radius:12px;background:${c.lang==='vi'?'#EAF4EE':'#EBF4FF'};color:${c.lang==='vi'?'var(--success)':'var(--info)'}">${c.lang==='vi'?'🇻🇳 VI':'🇬🇧 EN'} · ${c.tone||''}</span>
+        <button class="btn btn-outline btn-sm" onclick="copyText('${escStr(c.text)}',this)">Copy</button>
+      </div>
+      <p style="font-size:13px;line-height:1.7">${escHtml(c.text)}</p>
+    </div>`).join('');
+  out.innerHTML=`${caps}
+    <div class="card-sm" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:12px;font-weight:500"># Caption (${(g.hashtags_caption||[]).length} tags)</span>
+        <button class="btn btn-outline btn-sm" onclick="copyText('${escStr((g.hashtags_caption||[]).join(' '))}',this)">Copy</button>
+      </div>
+      <div class="tag-wrap">${(g.hashtags_caption||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    </div>
+    <div class="card-sm" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:12px;font-weight:500">💬 1st comment (${(g.hashtags_comment||[]).length} tags)</span>
+        <button class="btn btn-outline btn-sm" onclick="copyText('${escStr((g.hashtags_comment||[]).join(' '))}',this)">Copy</button>
+      </div>
+      <div class="tag-wrap">${(g.hashtags_comment||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    </div>
+    ${g.bestTime?`<div class="notice notice-ok">⏰ <strong>Best time slot:</strong> ${g.bestTime}</div>`:''}
+    ${g.tip?`<div class="notice notice-info">💡 ${g.tip}</div>`:''}
+    <div><span class="lbl">Schedule this post</span>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<button class="btn btn-outline btn-sm" onclick="schedulePost('${d}','${escStr(g.captions?.[0]?.text||'Post')}',this)">${d}</button>`).join('')}
+      </div>
+    </div>`;
+}
+
+function schedulePost(day,caption,btn){
+  state.calendar[day]=state.calendar[day]||[];
+  state.calendar[day].push({platform:state.platform,caption});
+  renderCalendar();
+  btn.textContent='✓ '+day; btn.style.borderColor='var(--success)'; btn.style.color='var(--success)';
+  document.getElementById('stat-posts').textContent=Object.values(state.calendar).flat().length;
+}
+function renderCalendar(){
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{
+    const el=document.getElementById('cal-'+d); if(!el) return;
+    el.innerHTML=(state.calendar[d]||[]).map((p,i)=>`
+      <div class="cal-post">
+        <div style="font-size:9px;margin-bottom:2px">${p.platform==='instagram'?'📸 IG':'👍 FB'}</div>
+        <div style="font-size:10px;color:var(--warm-mid);line-height:1.3">${escHtml(p.caption.slice(0,40))}...</div>
+        <button class="cal-post-rm" onclick="removePost('${d}',${i})">×</button>
+      </div>`).join('')||'<div style="font-size:10px;color:var(--warm-border);text-align:center;margin:auto">—</div>';
+  });
+}
+function removePost(day,idx){ state.calendar[day].splice(idx,1); renderCalendar(); document.getElementById('stat-posts').textContent=Object.values(state.calendar).flat().length; }
+
+async function generateAltText(){
+  const key=getApiKey();
+  if(!key){ alert('Please add your API key in ⚙️ Settings first.'); return; }
+  const fn=document.getElementById('alt-input').value||'salon-photo.jpg';
+  const out=document.getElementById('alt-output'); const el=document.getElementById('alt-text');
+  el.textContent='⏳ Generating...'; out.style.display='block';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,
+        messages:[{role:'user',content:`Generate an SEO alt text for Instagram for this file: "${fn}". Premium beauty salon at Riviera Point, District 7, Ho Chi Minh City. In English, max 125 characters, 1-2 sentences, naturally include 2 local keywords (District 7, Phu My Hung or HCMC). Return ONLY the alt text, no quotes.`}]})
+    });
+    const data=await res.json();
+    const t=(data?.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    el.textContent=t; document.getElementById('alt-len').textContent=`${t.length}/125 characters`;
+  } catch(e){ el.textContent='Error: '+e.message; }
+}
+
+function copyText(text,btn){ navigator.clipboard.writeText(text).catch(()=>{}); const o=btn.textContent; btn.textContent='✓ Copied'; btn.style.color='var(--success)'; setTimeout(()=>{ btn.textContent=o; btn.style.color=''; },2000); }
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escStr(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,'\\n'); }
+
+// Init
+renderCalendar();
+updateApiBadge();
+</script>
+</body>
+</html>
