@@ -4,630 +4,599 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>The True Beauty — Content Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet"/>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --cream:#FAF7F2;--ink:#1A1410;--gold:#C9A84C;--gold-light:#E8D5A0;--gold-dark:#9A7A2E;
-    --warm-gray:#6B6057;--warm-mid:#8C7B70;--warm-pale:#EDE8E0;--warm-border:#D8CFC4;
-    --success:#4A8C5C;--danger:#C0392B;--info:#2B6CB0;--warning:#B7791F;
-    --surface:#FFFFFF;--surface2:#F5F0E8;
-  }
-  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
-  h2{font-family:'Playfair Display',serif}
-  .shell{display:flex;flex-direction:column;min-height:100vh;max-width:900px;margin:0 auto}
-  .header{display:flex;align-items:center;gap:14px;padding:18px 24px;border-bottom:1px solid var(--warm-border);background:var(--surface);position:sticky;top:0;z-index:100}
-  .logo{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-  .header-title{font-size:15px;font-weight:600}
-  .header-sub{font-size:11px;color:var(--warm-mid);margin-top:1px}
-  .badge{margin-left:auto;font-size:10px;padding:4px 10px;border-radius:20px;font-weight:500}
-  .badge-ok{background:#EAF4EE;color:var(--success);border:1px solid #B8DEC6}
-  .badge-warn{background:#FEF7E7;color:var(--warning);border:1px solid #F0D380}
-  .nav{display:flex;border-bottom:1px solid var(--warm-border);background:var(--surface);padding:0 16px;overflow-x:auto;scrollbar-width:none}
-  .nav::-webkit-scrollbar{display:none}
-  .nav-btn{padding:12px 14px;font-size:12px;background:none;border:none;border-bottom:2px solid transparent;color:var(--warm-mid);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;font-weight:400;margin-bottom:-1px;transition:color .15s,border-color .15s}
-  .nav-btn.active{color:var(--ink);border-bottom-color:var(--gold);font-weight:500}
-  .content{flex:1;padding:24px;overflow-y:auto}
-  .card{background:var(--surface);border:1px solid var(--warm-border);border-radius:12px;padding:20px;margin-bottom:14px}
-  .card-sm{background:var(--surface2);border:1px solid var(--warm-border);border-radius:10px;padding:14px}
-  .lbl{font-size:10px;font-weight:500;color:var(--warm-mid);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px}
-  .inp{width:100%;padding:10px 12px;font-size:13px;border:1px solid var(--warm-border);border-radius:8px;background:var(--surface);color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
-  .inp:focus{border-color:var(--gold)}
-  textarea.inp{resize:vertical;line-height:1.6}
-  .btn{padding:10px 18px;font-size:12px;font-weight:500;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.02em}
-  .btn-primary{background:var(--ink);color:var(--cream);border:none}
-  .btn-primary:hover{background:#2A2018}
-  .btn-primary:disabled{background:var(--warm-border);color:var(--warm-mid);cursor:not-allowed}
-  .btn-gold{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:white;border:none}
-  .btn-gold:hover{opacity:.9}
-  .btn-outline{background:none;border:1px solid var(--warm-border);color:var(--warm-gray)}
-  .btn-outline:hover{border-color:var(--gold);color:var(--gold-dark)}
-  .btn-sm{padding:5px 12px;font-size:11px}
-  .tag{display:inline-block;font-size:11px;padding:4px 9px;border-radius:20px;background:var(--surface2);border:1px solid var(--warm-border);color:var(--info);font-family:'DM Mono',monospace;line-height:1}
-  .tag-wrap{display:flex;flex-wrap:wrap;gap:5px}
-  .pool-card{border:1px solid var(--warm-border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--surface);transition:all .15s}
-  .pool-card.active{border-color:var(--gold);background:#FEFBF4}
-  .pool-label-pill{font-size:10px;padding:3px 8px;border-radius:12px;font-weight:500}
-  .progress-track{height:5px;background:var(--warm-pale);border-radius:3px;overflow:hidden}
-  .progress-fill{height:100%;border-radius:3px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .caption-box{border:1px solid var(--warm-border);border-radius:10px;padding:14px;background:var(--surface);margin-bottom:10px}
-  .module-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--surface);border:1px solid var(--warm-border);border-radius:10px;border-left:3px solid var(--warm-border);margin-bottom:8px}
-  .module-item.done{border-left-color:var(--success)}
-  .module-item.partial{border-left-color:var(--warning)}
-  .stat-card{background:var(--surface);border:1px solid var(--warm-border);border-radius:12px;padding:16px;text-align:center}
-  .stat-val{font-family:'Playfair Display',serif;font-size:26px;color:var(--ink);margin-bottom:2px}
-  .stat-lbl{font-size:11px;color:var(--warm-mid)}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-  .cal-day-head{font-size:10px;font-weight:500;text-align:center;color:var(--warm-mid);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-  .cal-col{min-height:120px;background:var(--surface);border:1px solid var(--warm-border);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:5px}
-  .cal-post{background:var(--surface2);border-radius:6px;padding:5px 7px;font-size:10px;position:relative}
-  .cal-post-rm{position:absolute;top:2px;right:4px;background:none;border:none;cursor:pointer;font-size:10px;color:var(--warm-mid);padding:0}
-  .step{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
-  .step-num{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
-  .page-stripe{height:3px;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-light));border-radius:2px;margin-bottom:20px}
-  .notice{font-size:12px;padding:11px 13px;border-radius:8px;line-height:1.5;margin-bottom:10px}
-  .notice-warn{background:#FEF7E7;color:var(--warning);border:1px solid #F0D380}
-  .notice-ok{background:#EAF4EE;color:var(--success);border:1px solid #B8DEC6}
-  .notice-info{background:#EBF4FF;color:var(--info);border:1px solid #B3D0F0}
-  /* API Key banner */
-  .api-banner{background:var(--surface);border:1px solid var(--warm-border);border-radius:12px;padding:16px;margin-bottom:20px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
-  .api-banner input{flex:1;min-width:220px}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .fadein{animation:fadeIn .25s ease forwards}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#FAF7F2;--ink:#1A1410;--gold:#C9A84C;--gold-light:#E8D5A0;--gold-dark:#9A7A2E;
+  --warm-mid:#8C7B70;--warm-border:#D8CFC4;--warm-gray:#6B6057;
+  --success:#4A8C5C;--danger:#C0392B;--info:#2B6CB0;--warning:#B7791F;
+  --surface:#FFF;--surface2:#F5F0E8;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+h2{font-family:'Playfair Display',serif}
+.shell{display:flex;flex-direction:column;min-height:100vh;max-width:900px;margin:0 auto}
+.header{display:flex;align-items:center;gap:14px;padding:16px 24px;border-bottom:1px solid var(--warm-border);background:var(--surface);position:sticky;top:0;z-index:100}
+.logo{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.header-title{font-size:14px;font-weight:600}
+.header-sub{font-size:11px;color:var(--warm-mid)}
+.api-badge{margin-left:auto;font-size:10px;padding:4px 10px;border-radius:20px;font-weight:500;cursor:pointer}
+.api-ok{background:#EAF4EE;color:var(--success);border:1px solid #B8DEC6}
+.api-warn{background:#FEF7E7;color:var(--warning);border:1px solid #F0D380}
+.nav{display:flex;border-bottom:1px solid var(--warm-border);background:var(--surface);padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{padding:11px 13px;font-size:12px;background:none;border:none;border-bottom:2px solid transparent;color:var(--warm-mid);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;font-weight:400;margin-bottom:-1px;transition:color .15s,border-color .15s}
+.nav-btn.active{color:var(--ink);border-bottom-color:var(--gold);font-weight:500}
+.content{flex:1;padding:22px;overflow-y:auto}
+.stripe{height:3px;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-light));border-radius:2px;margin-bottom:18px}
+.card{background:var(--surface);border:1px solid var(--warm-border);border-radius:12px;padding:18px;margin-bottom:12px}
+.card-sm{background:var(--surface2);border:1px solid var(--warm-border);border-radius:10px;padding:12px}
+.lbl{font-size:10px;font-weight:500;color:var(--warm-mid);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:7px}
+.inp{width:100%;padding:9px 11px;font-size:13px;border:1px solid var(--warm-border);border-radius:8px;background:var(--surface);color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--gold)}
+.btn{padding:9px 16px;font-size:12px;font-weight:500;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-primary{background:var(--ink);color:var(--cream);border:none}
+.btn-primary:hover{background:#2A2018}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:#fff;border:none}
+.btn-gold:hover{opacity:.9}
+.btn-outline{background:none;border:1px solid var(--warm-border);color:var(--warm-gray)}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold-dark)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-danger{background:none;border:1px solid #EDBBBB;color:var(--danger);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.tag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--warm-border);color:var(--info);font-family:'DM Mono',monospace;line-height:1}
+.tag-wrap{display:flex;flex-wrap:wrap;gap:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.notice{font-size:12px;padding:10px 13px;border-radius:8px;line-height:1.5;margin-bottom:10px}
+.notice-warn{background:#FEF7E7;color:var(--warning);border:1px solid #F0D380}
+.notice-ok{background:#EAF4EE;color:var(--success);border:1px solid #B8DEC6}
+.notice-info{background:#EBF4FF;color:var(--info);border:1px solid #B3D0F0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-head{font-size:10px;font-weight:500;text-align:center;color:var(--warm-mid);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.cal-col{min-height:110px;background:var(--surface);border:1px solid var(--warm-border);border-radius:10px;padding:7px;display:flex;flex-direction:column;gap:4px}
+.cal-post{background:var(--surface2);border-radius:5px;padding:4px 6px;font-size:10px;position:relative;padding-right:16px}
+.stat-card{background:var(--surface);border:1px solid var(--warm-border);border-radius:12px;padding:14px;text-align:center}
+.stat-val{font-family:'Playfair Display',serif;font-size:24px;color:var(--ink);margin-bottom:2px}
+.stat-lbl{font-size:11px;color:var(--warm-mid)}
+.step{display:flex;gap:11px;align-items:flex-start;margin-bottom:9px}
+.step-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+/* Media grid */
+.media-item{border:2px solid var(--warm-border);border-radius:10px;padding:10px 7px;cursor:pointer;text-align:center;background:var(--surface);transition:all .15s;position:relative}
+.media-item:hover{border-color:var(--gold);background:#FEFBF4}
+.media-item.selected{border-color:var(--gold);background:#FEFBF4}
+.media-badge{position:absolute;top:4px;right:4px;width:17px;height:17px;border-radius:50%;background:var(--gold);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700}
+/* Drop zone */
+.drop-zone{border:2px dashed var(--warm-border);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;background:var(--surface);transition:all .2s}
+.drop-zone:hover{border-color:var(--gold);background:#FEFBF4}
+/* Module item */
+.module-item{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;background:var(--surface);border:1px solid var(--warm-border);border-radius:10px;border-left:3px solid var(--warm-border);margin-bottom:7px}
+.module-item.done{border-left-color:var(--success)}
+.module-item.partial{border-left-color:var(--warning)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fadein{animation:fadeIn .2s ease forwards}
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <div class="header">
-    <div class="logo">💅</div>
-    <div>
-      <div class="header-title">The True Beauty</div>
-      <div class="header-sub">Riviera Point · District 7, HCMC · Instagram & Facebook</div>
-    </div>
-    <div class="badge" id="api-badge" onclick="showTab('settings',document.querySelectorAll('.nav-btn')[5])" style="cursor:pointer">⚙️ API Key</div>
+<div class="header">
+  <div class="logo">💅</div>
+  <div>
+    <div class="header-title">The True Beauty</div>
+    <div class="header-sub">Riviera Point · District 7, HCMC · Instagram & Facebook</div>
   </div>
+  <div class="api-badge api-warn" id="api-badge" onclick="showTab('settings')">⚠️ No API Key</div>
+</div>
 
-  <nav class="nav">
-    <button class="nav-btn active" onclick="showTab('home',this)">🏠 Home</button>
-    <button class="nav-btn" onclick="showTab('media',this)">📂 Media Library</button>
-    <button class="nav-btn" onclick="showTab('create',this)">✨ Create Post</button>
-    <button class="nav-btn" onclick="showTab('seo',this)"># SEO</button>
-    <button class="nav-btn" onclick="showTab('calendar',this)">📅 Calendar</button>
-    <button class="nav-btn" onclick="showTab('settings',this)">⚙️ Settings</button>
-  </nav>
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('home',this)">🏠 Home</button>
+  <button class="nav-btn" onclick="showTab('media',this)">📂 Media Library</button>
+  <button class="nav-btn" onclick="showTab('create',this)">✨ Create Post</button>
+  <button class="nav-btn" onclick="showTab('seo',this)"># SEO</button>
+  <button class="nav-btn" onclick="showTab('calendar',this)">📅 Calendar</button>
+  <button class="nav-btn" onclick="showTab('settings',this)">⚙️ Settings</button>
+</nav>
 
-  <div class="content">
+<div class="content">
 
-    <!-- HOME -->
-    <div id="tab-home" class="fadein">
-      <div class="page-stripe"></div>
-      <h2 style="font-size:20px;margin-bottom:4px">Welcome 👋</h2>
-      <p style="font-size:13px;color:var(--warm-mid);margin-bottom:20px">Riviera Point Salon · Tân Phú, District 7</p>
-      <div id="home-api-warn" class="notice notice-warn" style="display:none">
-        ⚠️ No API key configured — go to <strong>⚙️ Settings</strong> to add your Anthropic key and unlock AI generation.
-      </div>
-      <div class="grid3" style="margin-bottom:20px">
-        <div class="stat-card"><div class="stat-val" id="stat-posts">0</div><div class="stat-lbl">Scheduled posts</div></div>
-        <div class="stat-card"><div class="stat-val">☁️</div><div class="stat-lbl">Drive connected</div></div>
-        <div class="stat-card"><div class="stat-val">IG+FB</div><div class="stat-lbl">Platforms</div></div>
-      </div>
-      <span class="lbl">Workflow</span>
-      <div class="card" style="padding:16px">
-        <div class="step"><div class="step-num" style="background:#EAF4EE;color:var(--success)">✓</div><div><div style="font-size:13px;font-weight:500">Upload media to Google Drive</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Photos and videos from the salon</div></div></div>
-        <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">2</div><div><div style="font-size:13px">Browse the media library</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Select the file to post</div></div></div>
-        <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">3</div><div><div style="font-size:13px">Generate captions + SEO hashtags</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Vietnamese + English, 4 verified pools</div></div></div>
-        <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">4</div><div><div style="font-size:13px">Schedule in the editorial calendar</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Pick the best day and time slot</div></div></div>
-        <div class="step" style="margin-bottom:0"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">5</div><div><div style="font-size:13px">Copy & publish on IG / Facebook</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Manual or via Meta API (Phase 2)</div></div></div>
-      </div>
-      <span class="lbl">Quick actions</span>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-gold" onclick="showTab('create',document.querySelectorAll('.nav-btn')[2])">✨ Create a post</button>
-        <button class="btn btn-outline" onclick="showTab('media',document.querySelectorAll('.nav-btn')[1])">📂 Media Library</button>
-        <button class="btn btn-outline" onclick="showTab('seo',document.querySelectorAll('.nav-btn')[3])"># SEO & Hashtags</button>
-      </div>
-    </div>
-
-    <!-- MEDIA -->
-    <div id="tab-media" style="display:none">
-      <div class="page-stripe"></div>
-      <h2 style="font-size:18px;margin-bottom:6px">📂 Media Library</h2>
-      <p style="font-size:12px;color:var(--warm-mid);margin-bottom:18px">Upload photos or videos from your device</p>
-
-      <!-- Drop zone -->
-      <div id="drop-zone" onclick="document.getElementById('file-input').click()"
-        style="border:2px dashed var(--warm-border);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;background:var(--surface);transition:all .2s;margin-bottom:16px"
-        ondragover="event.preventDefault();this.style.borderColor='var(--gold)';this.style.background='#FEFBF4'"
-        ondragleave="this.style.borderColor='var(--warm-border)';this.style.background='var(--surface)'"
-        ondrop="handleDrop(event)">
-        <div style="font-size:36px;margin-bottom:10px">📸</div>
-        <div style="font-size:14px;font-weight:500;margin-bottom:4px">Click or drag & drop</div>
-        <div style="font-size:12px;color:var(--warm-mid)">Photos and videos — JPG, PNG, MP4, MOV</div>
-        <input id="file-input" type="file" accept="image/*,video/*" multiple style="display:none" onchange="handleFileInput(this)"/>
-      </div>
-
-      <div id="media-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px"></div>
-    </div>
-
-    <!-- CREATE -->
-    <div id="tab-create" style="display:none">
-      <div class="page-stripe"></div>
-      <h2 style="font-size:18px;margin-bottom:16px">✨ Create a Post</h2>
-      <div id="no-file-warn" class="notice notice-warn" style="display:none">⚠️ No files selected — go to <strong>Media Library</strong> to upload media first</div>
-      <div class="grid2">
-        <div style="display:flex;flex-direction:column;gap:14px">
-
-          <!-- Multi-file selector -->
-          <div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <span class="lbl" style="margin-bottom:0">Selected files <span id="file-count" style="color:var(--gold-dark)">(0/10)</span></span>
-              <div style="display:flex;gap:6px">
-                <button class="btn btn-outline btn-sm" onclick="toggleLibPicker()">📂 From Library</button>
-                <button class="btn btn-outline btn-sm" onclick="document.getElementById('create-file-input').click()">+ Upload</button>
-              </div>
-              <input id="create-file-input" type="file" accept="image/*,video/*" multiple style="display:none" onchange="addFilesToPost(this)"/>
-            </div>
-
-            <!-- Inline library picker -->
-            <div id="lib-picker" style="display:none;background:var(--surface2);border:1px solid var(--warm-border);border-radius:10px;padding:10px;margin-bottom:8px">
-              <div style="font-size:11px;color:var(--warm-mid);margin-bottom:8px">Click to select · click again to deselect · max 10</div>
-              <div id="lib-picker-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px"></div>
-            </div>
-            <div id="selected-files-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;min-height:80px;background:var(--surface2);border:1px dashed var(--warm-border);border-radius:10px;padding:8px">
-              <div style="display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--warm-mid);grid-column:1/-1">Drop files here or click + Add files</div>
-            </div>
-            <div style="font-size:11px;color:var(--warm-mid);margin-top:5px">Up to 10 photos/videos · drag to reorder</div>
-          </div>
-
-          <div>
-            <span class="lbl">Post type</span>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <button class="btn btn-outline btn-sm" id="type-single" onclick="setPostType('single')" style="border-color:var(--gold);color:var(--gold-dark)">📷 Single</button>
-              <button class="btn btn-outline btn-sm" id="type-carousel" onclick="setPostType('carousel')">🎠 Carousel (2–10)</button>
-              <button class="btn btn-outline btn-sm" id="type-reel" onclick="setPostType('reel')">🎬 Reel</button>
-            </div>
-          </div>
-
-          <div>
-            <span class="lbl">Platform</span>
-            <div style="display:flex;gap:8px">
-              <button class="btn btn-outline" id="plat-ig" onclick="setPlatform('instagram')" style="flex:1;font-size:12px;border-color:var(--gold);color:var(--gold-dark)">📸 Instagram</button>
-              <button class="btn btn-outline" id="plat-fb" onclick="setPlatform('facebook')" style="flex:1;font-size:12px">👍 Facebook</button>
-            </div>
-          </div>
-          <div>
-            <span class="lbl">Caption language</span>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <button class="btn btn-outline btn-sm" id="lang-vi+en" onclick="setLang('vi+en')" style="border-color:var(--gold);color:var(--gold-dark)">🇻🇳+🇬🇧 VI+EN</button>
-              <button class="btn btn-outline btn-sm" id="lang-vi" onclick="setLang('vi')">🇻🇳 Vietnamese</button>
-              <button class="btn btn-outline btn-sm" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
-            </div>
-          </div>
-          <div>
-            <span class="lbl">Hashtag pools</span>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <button class="btn btn-outline btn-sm pool-toggle" data-pool="A" onclick="togglePool('A',this)" style="border-color:var(--gold);color:var(--gold-dark)">Pool A</button>
-              <button class="btn btn-outline btn-sm pool-toggle" data-pool="B" onclick="togglePool('B',this)" style="border-color:var(--gold);color:var(--gold-dark)">Pool B</button>
-              <button class="btn btn-outline btn-sm pool-toggle" data-pool="C" onclick="togglePool('C',this)" style="border-color:var(--gold);color:var(--gold-dark)">Pool C</button>
-              <button class="btn btn-outline btn-sm pool-toggle" data-pool="D" onclick="togglePool('D',this)">Pool D</button>
-            </div>
-          </div>
-          <button class="btn btn-gold" id="gen-btn" onclick="generateContent()" disabled style="width:100%;opacity:.5">✨ Generate caption + hashtags</button>
-          <button class="btn btn-outline" id="process-btn" onclick="processPhoto()" disabled style="width:100%;opacity:.5">🖼️ Retouch & upload all photos</button>
-        </div>
-        <div id="gen-output">
-          <div style="text-align:center;padding:40px 16px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px">
-            <div style="font-size:28px;margin-bottom:8px">🤖</div>
-            <div style="font-size:13px;color:var(--warm-mid)">Add files and click Generate</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SEO -->
-    <div id="tab-seo" style="display:none">
-      <div class="page-stripe"></div>
-      <h2 style="font-size:18px;margin-bottom:6px"># Automatic SEO</h2>
-      <p style="font-size:12px;color:var(--warm-mid);margin-bottom:18px">Hashtags verified on real Instagram/TikTok posts from HCMC salons</p>
-
-      <div class="pool-card active">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:13px;font-weight:500">Pool A — Global popular</span>
-          <span class="pool-label-pill" style="background:#EBF4FF;color:var(--info)">High volume</span>
-        </div>
-        <div class="tag-wrap" style="margin-bottom:8px">
-          <span class="tag">#beautysalon</span><span class="tag">#hairsalon</span><span class="tag">#nailart</span><span class="tag">#hairstyle</span><span class="tag">#haircolor</span><span class="tag">#balayage</span><span class="tag">#spa</span><span class="tag">#manicure</span><span class="tag">#haircare</span><span class="tag">#hairstylist</span>
-        </div>
-        <div style="font-size:11px;color:var(--warm-mid)">📊 500K–5M views/tag · High global competition</div>
-      </div>
-
-      <div class="pool-card active">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:13px;font-weight:500">Pool B — HCMC niche</span>
-          <span class="pool-label-pill" style="background:#EAF4EE;color:var(--success)">✓ Verified on IG/TikTok</span>
-        </div>
-        <div class="tag-wrap" style="margin-bottom:8px">
-          <span class="tag">#hochiminhhairsalon</span><span class="tag">#hairsaloninhcmc</span><span class="tag">#vietnamhairsalon</span><span class="tag">#hochiminhspa</span><span class="tag">#salontocsaigon</span><span class="tag">#salontoc</span><span class="tag">#koreanhairsalon</span><span class="tag">#reviewlamdep</span><span class="tag">#nốitócđepsàigòn</span><span class="tag">#hcmc</span>
-        </div>
-        <div style="font-size:11px;color:var(--warm-mid)">📊 10K–200K views/tag · Qualified local audience · Sources: HAEU Salon, Xing Hair, TikTok HCMC</div>
-      </div>
-
-      <div class="pool-card active">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:13px;font-weight:500">Pool C — Local District 7 / Phú Mỹ Hưng</span>
-          <span class="pool-label-pill" style="background:#FEF7E7;color:var(--warning)">Local conversion</span>
-        </div>
-        <div class="tag-wrap" style="margin-bottom:8px">
-          <span class="tag">#phumyhung</span><span class="tag">#quan7</span><span class="tag">#saigon</span><span class="tag">#vietnam</span><span class="tag">#district7hcmc</span><span class="tag">#hochiminhcity</span><span class="tag">#thingstodohochiminh</span><span class="tag">#expatsinvietnam</span><span class="tag">#livinginvietnam</span><span class="tag">#saigonlife</span>
-        </div>
-        <div style="font-size:11px;color:var(--warm-mid)">📊 Geo-targeted traffic · Expats + Riviera Point residents</div>
-      </div>
-
-      <div class="pool-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:13px;font-weight:500">Pool D — Trending techniques</span>
-          <span class="pool-label-pill" style="background:#F9ECEC;color:var(--danger)">Virality boost</span>
-        </div>
-        <div class="tag-wrap" style="margin-bottom:8px">
-          <span class="tag">#olaplex</span><span class="tag">#balayagehair</span><span class="tag">#hairtransformation</span><span class="tag">#gelpolish</span><span class="tag">#nailsofinstagram</span><span class="tag">#kbeauty</span><span class="tag">#koreaheadspa</span><span class="tag">#hairextensions</span><span class="tag">#highlights</span><span class="tag">#hairgoals</span>
-        </div>
-        <div style="font-size:11px;color:var(--warm-mid)">📊 Variable reach · Trending on TikTok · Use in 1st comment</div>
-      </div>
-
-      <div class="notice notice-ok">💡 <strong>Recommended:</strong> Pool A (3 tags) + Pool B (5 tags) + Pool C (4 tags) in caption. Pool D in 1st comment. Rotate every 3 posts to avoid shadowban.</div>
-
-      <div class="card">
-        <span class="lbl">Alt text generator — Riviera Point Salon</span>
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <input id="alt-input" class="inp" placeholder="e.g. balayage-hair-photo.jpg" style="flex:1"/>
-          <button class="btn btn-primary" onclick="generateAltText()">✨ Generate</button>
-        </div>
-        <div id="alt-output" style="display:none" class="card-sm">
-          <div style="font-size:11px;color:var(--warm-mid);margin-bottom:6px">Generated alt text</div>
-          <p id="alt-text" style="font-size:13px;font-style:italic;line-height:1.6"></p>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-            <span id="alt-len" style="font-size:11px;color:var(--warm-mid)"></span>
-            <button class="btn btn-outline btn-sm" onclick="copyText(document.getElementById('alt-text').textContent,this)">Copy</button>
-          </div>
-        </div>
-        <div class="notice notice-info">📍 Where to add alt text on Instagram: Create post → Advanced settings → Accessibility → Write alt text</div>
-      </div>
-    </div>
-
-    <!-- CALENDAR -->
-    <div id="tab-calendar" style="display:none">
-      <div class="page-stripe"></div>
-      <h2 style="font-size:18px;margin-bottom:16px">📅 Editorial Calendar</h2>
-      <div class="cal-grid">
-        <div class="cal-day-head">Mon</div><div class="cal-day-head">Tue</div><div class="cal-day-head">Wed</div><div class="cal-day-head">Thu</div><div class="cal-day-head">Fri</div><div class="cal-day-head">Sat</div><div class="cal-day-head">Sun</div>
-        <div class="cal-col" id="cal-Mon"></div><div class="cal-col" id="cal-Tue"></div><div class="cal-col" id="cal-Wed"></div><div class="cal-col" id="cal-Thu"></div><div class="cal-col" id="cal-Fri"></div><div class="cal-col" id="cal-Sat"></div><div class="cal-col" id="cal-Sun"></div>
-      </div>
-      <div class="notice notice-info" style="margin-top:14px">⏰ <strong>Best time slots for District 7:</strong> Tue–Thu 7–9 PM · Saturday 10 AM–12 PM · Avoid Monday mornings and Sunday evenings</div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div id="tab-settings" style="display:none">
-      <div class="page-stripe"></div>
-      <h2 style="font-size:18px;margin-bottom:6px">⚙️ Settings</h2>
-      <p style="font-size:12px;color:var(--warm-mid);margin-bottom:20px">Configure your API key to unlock AI-powered features</p>
-
-      <div class="card">
-        <span class="lbl">Anthropic API Key</span>
-        <p style="font-size:12px;color:var(--warm-mid);margin-bottom:12px">Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold-dark)">console.anthropic.com</a> → API Keys → Create Key</p>
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <input id="api-key-input" class="inp" type="password" placeholder="sk-ant-api03-..." style="flex:1;font-family:'DM Mono',monospace;font-size:12px"/>
-          <button class="btn btn-gold" onclick="saveApiKey()">Save</button>
-        </div>
-        <div id="api-key-status" style="font-size:12px;color:var(--warm-mid)"></div>
-        <div class="notice notice-info" style="margin-top:12px">🔒 Your key is stored locally in your browser (localStorage). It never leaves your device except to call the Anthropic API directly.</div>
-      </div>
-
-      <div class="card">
-        <span class="lbl">Salon Info</span>
-        <div style="display:grid;gap:10px">
-          <div><span class="lbl">Salon name</span><input class="inp" value="The True Beauty"/></div>
-          <div><span class="lbl">Address</span><input class="inp" value="Riviera Point, 2 Nguyễn Văn Tưởng, Tân Phú, District 7, HCMC"/></div>
-          <div><span class="lbl">Facebook Place ID</span><input class="inp" value="ChIJsdYGzpwldTERX597EQ8DOQs" style="font-family:'DM Mono',monospace;font-size:12px"/></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <span class="lbl">Dev Roadmap</span>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--warm-mid);margin-bottom:6px"><span>Overall progress</span><span>4/10 modules ready</span></div>
-        <div class="progress-track" style="margin-bottom:16px"><div class="progress-fill" style="width:40%;background:linear-gradient(90deg,var(--gold-dark),var(--gold))"></div></div>
-        <div class="module-item done"><span style="font-size:16px">✅</span><div><div style="font-size:13px;font-weight:500">Content Hub UI</div><div style="font-size:12px;color:var(--warm-mid)">Full interface, navigation, calendar</div></div></div>
-        <div class="module-item done"><span style="font-size:16px">✅</span><div><div style="font-size:13px;font-weight:500">AI caption generation (VI/EN)</div><div style="font-size:12px;color:var(--warm-mid)">Claude API → 3 options, premium salon tone</div></div></div>
-        <div class="module-item done"><span style="font-size:16px">✅</span><div><div style="font-size:13px;font-weight:500">Verified SEO hashtags</div><div style="font-size:12px;color:var(--warm-mid)">4 pools validated on real HCMC publications</div></div></div>
-        <div class="module-item partial"><span style="font-size:16px">🔨</span><div><div style="font-size:13px;font-weight:500">Photo retouching</div><div style="font-size:12px;color:var(--warm-mid)">Pillow + rembg + Cloudinary — Phase 2</div></div></div>
-        <div class="module-item"><span style="font-size:16px">⬜</span><div><div style="font-size:13px;font-weight:500">Video editing (Reels 9:16)</div><div style="font-size:12px;color:var(--warm-mid)">MoviePy + FFmpeg — Phase 2</div></div></div>
-        <div class="module-item"><span style="font-size:16px">⬜</span><div><div style="font-size:13px;font-weight:500">Auto subtitles</div><div style="font-size:12px;color:var(--warm-mid)">OpenAI Whisper — Phase 2</div></div></div>
-        <div class="module-item"><span style="font-size:16px">⬜</span><div><div style="font-size:13px;font-weight:500">Meta Graph API publishing</div><div style="font-size:12px;color:var(--warm-mid)">Direct IG + FB publishing — Phase 3</div></div></div>
-      </div>
-    </div>
-
+<!-- HOME -->
+<div id="tab-home" class="fadein">
+  <div class="stripe"></div>
+  <h2 style="font-size:19px;margin-bottom:4px">Welcome 👋</h2>
+  <p style="font-size:13px;color:var(--warm-mid);margin-bottom:18px">Riviera Point Salon · Tân Phú, District 7</p>
+  <div id="home-warn" class="notice notice-warn" style="display:none">⚠️ No API key — go to <strong>⚙️ Settings</strong> to add your Anthropic key.</div>
+  <div class="grid3" style="margin-bottom:18px">
+    <div class="stat-card"><div class="stat-val" id="stat-posts">0</div><div class="stat-lbl">Scheduled posts</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-lib">0</div><div class="stat-lbl">Files in library</div></div>
+    <div class="stat-card"><div class="stat-val">IG+FB</div><div class="stat-lbl">Platforms</div></div>
+  </div>
+  <span class="lbl">Workflow</span>
+  <div class="card" style="padding:14px">
+    <div class="step"><div class="step-num" style="background:#EAF4EE;color:var(--success)">✓</div><div><div style="font-size:13px;font-weight:500">Upload media to Media Library</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Photos and videos from the salon</div></div></div>
+    <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">2</div><div><div style="font-size:13px">Create Post → pick from library</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Select up to 10 files for carousel</div></div></div>
+    <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">3</div><div><div style="font-size:13px">Generate captions + SEO hashtags</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Vietnamese + English, 4 verified pools</div></div></div>
+    <div class="step"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">4</div><div><div style="font-size:13px">Retouch photos via backend</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Auto brightness, contrast, saturation</div></div></div>
+    <div class="step" style="margin-bottom:0"><div class="step-num" style="background:var(--surface2);color:var(--warm-mid)">5</div><div><div style="font-size:13px">Schedule & publish on IG / Facebook</div><div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Copy URL + caption and post</div></div></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+    <button class="btn btn-gold" onclick="showTab('media')">📂 Upload media</button>
+    <button class="btn btn-outline" onclick="showTab('create')">✨ Create a post</button>
+    <button class="btn btn-outline" onclick="showTab('seo')"># SEO & Hashtags</button>
   </div>
 </div>
 
+<!-- MEDIA LIBRARY -->
+<div id="tab-media" style="display:none">
+  <div class="stripe"></div>
+  <h2 style="font-size:18px;margin-bottom:6px">📂 Media Library</h2>
+  <p style="font-size:12px;color:var(--warm-mid);margin-bottom:16px">Upload photos and videos · click to select for a post</p>
+  <div class="drop-zone" onclick="document.getElementById('lib-input').click()"
+    ondragover="event.preventDefault();this.style.borderColor='var(--gold)'"
+    ondragleave="this.style.borderColor='var(--warm-border)'"
+    ondrop="handleLibDrop(event)">
+    <div style="font-size:32px;margin-bottom:8px">📸</div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:3px">Click or drag & drop</div>
+    <div style="font-size:11px;color:var(--warm-mid)">JPG, PNG, MP4, MOV · up to 10 files at once</div>
+    <input id="lib-input" type="file" accept="image/*,video/*" multiple style="display:none" onchange="handleLibInput(this)"/>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 8px">
+    <span class="lbl" style="margin:0">Library (<span id="lib-count">0</span> files)</span>
+    <button class="btn-danger" onclick="clearLibrary()">Clear all</button>
+  </div>
+  <div id="lib-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px">
+    <div style="font-size:12px;color:var(--warm-mid);text-align:center;padding:30px;grid-column:1/-1">No files yet — upload above</div>
+  </div>
+</div>
+
+<!-- CREATE POST -->
+<div id="tab-create" style="display:none">
+  <div class="stripe"></div>
+  <h2 style="font-size:18px;margin-bottom:14px">✨ Create a Post</h2>
+  <div class="grid2">
+
+    <!-- LEFT PANEL -->
+    <div style="display:flex;flex-direction:column;gap:13px">
+
+      <!-- File selection -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+          <span class="lbl" style="margin:0">Files selected <span id="sel-count" style="color:var(--gold-dark);font-weight:600">(0/10)</span></span>
+          <button class="btn btn-outline btn-sm" onclick="openLibPicker()">📂 Pick from Library</button>
+        </div>
+        <!-- Selected files preview -->
+        <div id="sel-preview" style="min-height:70px;background:var(--surface2);border:1px dashed var(--warm-border);border-radius:10px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start">
+          <div style="width:100%;text-align:center;font-size:11px;color:var(--warm-mid);padding:16px 0">Click "Pick from Library" to select files</div>
+        </div>
+        <div style="font-size:10px;color:var(--warm-mid);margin-top:4px">Up to 10 photos/videos · click × to remove</div>
+      </div>
+
+      <!-- Post type -->
+      <div>
+        <span class="lbl">Post type</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" id="type-single" onclick="setPostType('single')">📷 Single</button>
+          <button class="btn btn-outline btn-sm" id="type-carousel" onclick="setPostType('carousel')">🎠 Carousel</button>
+          <button class="btn btn-outline btn-sm" id="type-reel" onclick="setPostType('reel')">🎬 Reel</button>
+        </div>
+      </div>
+
+      <!-- Platform -->
+      <div>
+        <span class="lbl">Platform</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" id="plat-ig" onclick="setPlatform('instagram')" style="flex:1;font-size:12px">📸 Instagram</button>
+          <button class="btn btn-outline" id="plat-fb" onclick="setPlatform('facebook')" style="flex:1;font-size:12px">👍 Facebook</button>
+        </div>
+      </div>
+
+      <!-- Language -->
+      <div>
+        <span class="lbl">Caption language</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" id="lang-vi+en" onclick="setLang('vi+en')">🇻🇳+🇬🇧 VI+EN</button>
+          <button class="btn btn-outline btn-sm" id="lang-vi" onclick="setLang('vi')">🇻🇳 Vietnamese</button>
+          <button class="btn btn-outline btn-sm" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
+        </div>
+      </div>
+
+      <!-- Pools -->
+      <div>
+        <span class="lbl">Hashtag pools</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm pool-btn" data-pool="A" onclick="togglePool('A',this)">Pool A</button>
+          <button class="btn btn-outline btn-sm pool-btn" data-pool="B" onclick="togglePool('B',this)">Pool B</button>
+          <button class="btn btn-outline btn-sm pool-btn" data-pool="C" onclick="togglePool('C',this)">Pool C</button>
+          <button class="btn btn-outline btn-sm pool-btn" data-pool="D" onclick="togglePool('D',this)">Pool D</button>
+        </div>
+      </div>
+
+      <button class="btn btn-gold" id="gen-btn" onclick="generateContent()" style="width:100%">✨ Generate captions + hashtags</button>
+      <button class="btn btn-outline" id="process-btn" onclick="processPhotos()" style="width:100%">🖼️ Retouch & upload photos</button>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="gen-output">
+      <div style="text-align:center;padding:40px 16px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px">
+        <div style="font-size:26px;margin-bottom:8px">🤖</div>
+        <div style="font-size:13px;color:var(--warm-mid)">Pick files and click Generate</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRARY PICKER MODAL -->
+<div id="lib-picker-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border-radius:16px;padding:20px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div>
+        <div style="font-size:14px;font-weight:500">Pick from Library</div>
+        <div style="font-size:11px;color:var(--warm-mid);margin-top:2px">Click to select · click again to deselect · max 10</div>
+      </div>
+      <button onclick="closeLibPicker()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--warm-mid)">×</button>
+    </div>
+    <div id="picker-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+      <button class="btn btn-outline" onclick="closeLibPicker()">Cancel</button>
+      <button class="btn btn-gold" onclick="confirmLibPicker()">Confirm (<span id="picker-count">0</span> selected)</button>
+    </div>
+  </div>
+</div>
+
+<!-- SEO -->
+<div id="tab-seo" style="display:none">
+  <div class="stripe"></div>
+  <h2 style="font-size:18px;margin-bottom:6px"># Automatic SEO</h2>
+  <p style="font-size:12px;color:var(--warm-mid);margin-bottom:16px">Hashtags verified on real Instagram/TikTok posts from HCMC salons</p>
+
+  <div id="seo-pools"></div>
+
+  <div class="notice notice-ok">💡 <strong>Recommended:</strong> Pool A (3 tags) + Pool B (5 tags) + Pool C (4 tags) in caption. Pool D in 1st comment. Rotate every 3 posts.</div>
+
+  <div class="card">
+    <span class="lbl">Alt text generator</span>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input id="alt-inp" class="inp" placeholder="e.g. balayage-hair-photo.jpg" style="flex:1"/>
+      <button class="btn btn-primary" onclick="genAltText()">✨ Generate</button>
+    </div>
+    <div id="alt-out" style="display:none" class="card-sm">
+      <div style="font-size:11px;color:var(--warm-mid);margin-bottom:5px">Generated alt text</div>
+      <p id="alt-text" style="font-size:13px;font-style:italic;line-height:1.6"></p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:7px">
+        <span id="alt-len" style="font-size:11px;color:var(--warm-mid)"></span>
+        <button class="btn btn-outline btn-sm" onclick="copyBtn(document.getElementById('alt-text').textContent,this)">Copy</button>
+      </div>
+    </div>
+    <div class="notice notice-info" style="margin-top:10px">📍 Instagram: Create post → Advanced settings → Accessibility → Write alt text</div>
+  </div>
+</div>
+
+<!-- CALENDAR -->
+<div id="tab-calendar" style="display:none">
+  <div class="stripe"></div>
+  <h2 style="font-size:18px;margin-bottom:14px">📅 Editorial Calendar</h2>
+  <div class="cal-grid">
+    <div class="cal-head">Mon</div><div class="cal-head">Tue</div><div class="cal-head">Wed</div><div class="cal-head">Thu</div><div class="cal-head">Fri</div><div class="cal-head">Sat</div><div class="cal-head">Sun</div>
+    <div class="cal-col" id="cal-Mon"></div><div class="cal-col" id="cal-Tue"></div><div class="cal-col" id="cal-Wed"></div><div class="cal-col" id="cal-Thu"></div><div class="cal-col" id="cal-Fri"></div><div class="cal-col" id="cal-Sat"></div><div class="cal-col" id="cal-Sun"></div>
+  </div>
+  <div class="notice notice-info" style="margin-top:12px">⏰ <strong>Best slots for District 7:</strong> Tue–Thu 7–9 PM · Saturday 10 AM–12 PM</div>
+</div>
+
+<!-- SETTINGS -->
+<div id="tab-settings" style="display:none">
+  <div class="stripe"></div>
+  <h2 style="font-size:18px;margin-bottom:6px">⚙️ Settings</h2>
+  <p style="font-size:12px;color:var(--warm-mid);margin-bottom:18px">Configure your API keys</p>
+  <div class="card">
+    <span class="lbl">Anthropic API Key</span>
+    <p style="font-size:12px;color:var(--warm-mid);margin-bottom:10px">Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold-dark)">console.anthropic.com</a> → API Keys → Create Key</p>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input id="api-inp" class="inp" type="password" placeholder="sk-ant-api03-..." style="flex:1;font-family:'DM Mono',monospace;font-size:12px"/>
+      <button class="btn btn-gold" onclick="saveKey()">Save</button>
+    </div>
+    <div id="key-status" style="font-size:12px;color:var(--warm-mid)"></div>
+    <div class="notice notice-info" style="margin-top:10px">🔒 Stored in your browser localStorage — never shared.</div>
+  </div>
+  <div class="card">
+    <span class="lbl">Backend</span>
+    <div style="font-size:12px;color:var(--warm-mid);margin-bottom:8px">Railway backend URL</div>
+    <input class="inp" value="https://thetruebeauty-backend.up.railway.app" id="backend-url" style="font-family:'DM Mono',monospace;font-size:12px"/>
+  </div>
+  <div class="card">
+    <span class="lbl">Roadmap</span>
+    <div id="roadmap"></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /shell -->
+
 <script>
-// ─── Backend ──────────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
 const BACKEND_URL = "https://thetruebeauty-backend.up.railway.app";
+const POOLS = {
+  A:{label:"Pool A — Global popular",color:"info",reach:"500K–5M views/tag",tags:["#beautysalon","#hairsalon","#nailart","#hairstyle","#haircolor","#balayage","#spa","#manicure","#haircare","#hairstylist"]},
+  B:{label:"Pool B — HCMC niche",color:"success",reach:"10K–200K views/tag ✓ Verified",tags:["#hochiminhhairsalon","#hairsaloninhcmc","#vietnamhairsalon","#hochiminhspa","#salontocsaigon","#salontoc","#koreanhairsalon","#reviewlamdep","#nốitócđepsàigòn","#hcmc"]},
+  C:{label:"Pool C — Local District 7",color:"warning",reach:"Geo-targeted · Expats + Riviera Point",tags:["#phumyhung","#quan7","#saigon","#vietnam","#district7hcmc","#hochiminhcity","#thingstodohochiminh","#expatsinvietnam","#livinginvietnam","#saigonlife"]},
+  D:{label:"Pool D — Trending techniques",color:"danger",reach:"Variable · Use in 1st comment",tags:["#olaplex","#balayagehair","#hairtransformation","#gelpolish","#nailsofinstagram","#kbeauty","#koreaheadspa","#hairextensions","#highlights","#hairgoals"]},
+};
+const ROADMAP = [
+  {done:true,label:"Content Hub UI",desc:"Navigation, calendar, SEO"},
+  {done:true,label:"Media Library",desc:"Upload & manage photos/videos"},
+  {done:true,label:"AI captions VI/EN",desc:"Claude API, 3 options"},
+  {done:true,label:"Verified SEO hashtags",desc:"4 pools validated HCMC"},
+  {done:true,label:"Photo retouching backend",desc:"Pillow + Cloudinary on Railway"},
+  {done:false,label:"Video editing (Reels 9:16)",desc:"MoviePy + FFmpeg — Phase 2"},
+  {done:false,label:"Auto subtitles",desc:"OpenAI Whisper — Phase 2"},
+  {done:false,label:"Meta Graph API publishing",desc:"Direct IG + FB — Phase 3"},
+  {done:false,label:"1st comment auto-posting",desc:"Pool D hashtags — Phase 3"},
+  {done:false,label:"n8n orchestration",desc:"Full automation — Phase 3"},
+];
 
 // ─── State ────────────────────────────────────────────────────────────────────
-const state = {
-  selectedFile: null, selectedFiles: [], mediaLibrary: [], postType: 'single', platform: 'instagram', lang: 'vi+en',
+const S = {
+  mediaLibrary: [],       // {id, name, type, rawFile}
+  selectedFiles: [],      // subset of mediaLibrary
+  pickerTemp: [],         // temp selection in modal
+  postType: 'single',
+  platform: 'instagram',
+  lang: 'vi+en',
   activePools: new Set(['A','B','C']),
   calendar: {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]},
 };
-const POOLS = {
-  A:['#beautysalon','#hairsalon','#nailart','#hairstyle','#haircolor','#balayage','#spa','#manicure','#haircare','#hairstylist'],
-  B:['#hochiminhhairsalon','#hairsaloninhcmc','#vietnamhairsalon','#hochiminhspa','#salontocsaigon','#salontoc','#koreanhairsalon','#reviewlamdep','#nốitócđepsàigòn','#hcmc'],
-  C:['#phumyhung','#quan7','#saigon','#vietnam','#district7hcmc','#hochiminhcity','#thingstodohochiminh','#expatsinvietnam','#livinginvietnam','#saigonlife'],
-  D:['#olaplex','#balayagehair','#hairtransformation','#gelpolish','#nailsofinstagram','#kbeauty','#koreaheadspa','#hairextensions','#highlights','#hairgoals'],
-};
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+(function init(){
+  updateApiBadge();
+  renderCalendar();
+  renderSEOPools();
+  renderRoadmap();
+  setActivePlatform('instagram');
+  setActiveLang('vi+en');
+  setActivePostType('single');
+  document.querySelectorAll('.pool-btn').forEach(b=>{
+    if(S.activePools.has(b.dataset.pool)) activateBtn(b);
+  });
+})();
 
 // ─── API Key ──────────────────────────────────────────────────────────────────
-function getApiKey(){ return localStorage.getItem('thetruebeauty_anthropic_key')||''; }
-function saveApiKey(){
-  const k = document.getElementById('api-key-input').value.trim();
-  if(!k){ document.getElementById('api-key-status').textContent='Please enter a key.'; return; }
-  localStorage.setItem('thetruebeauty_anthropic_key', k);
-  document.getElementById('api-key-status').textContent='✅ Key saved successfully!';
-  document.getElementById('api-key-status').style.color='var(--success)';
+function getKey(){ return localStorage.getItem('ttb_anthropic_key')||''; }
+function saveKey(){
+  const k=document.getElementById('api-inp').value.trim();
+  if(!k) return;
+  localStorage.setItem('ttb_anthropic_key',k);
+  document.getElementById('key-status').textContent='✅ Key saved!';
+  document.getElementById('key-status').style.color='var(--success)';
   updateApiBadge();
 }
 function updateApiBadge(){
-  const badge = document.getElementById('api-badge');
-  const warn = document.getElementById('home-api-warn');
-  if(getApiKey()){
-    badge.className='badge badge-ok'; badge.textContent='● API Ready';
-    if(warn) warn.style.display='none';
-  } else {
-    badge.className='badge badge-warn'; badge.textContent='⚠️ No API Key';
-    if(warn) warn.style.display='block';
-  }
+  const b=document.getElementById('api-badge');
+  const w=document.getElementById('home-warn');
+  if(getKey()){ b.className='api-badge api-ok'; b.textContent='● API Ready'; if(w) w.style.display='none'; }
+  else { b.className='api-badge api-warn'; b.textContent='⚠️ No API Key'; if(w) w.style.display='block'; }
 }
 
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
+// ─── Tab switching ────────────────────────────────────────────────────────────
 function showTab(id, btn){
-  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>{ el.style.display='none'; el.classList.remove('fadein'); });
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const el = document.getElementById('tab-'+id);
-  if(el){ el.style.display=''; el.classList.add('fadein'); }
+  const el=document.getElementById('tab-'+id);
+  if(el){ el.style.display=''; requestAnimationFrame(()=>el.classList.add('fadein')); }
   if(btn) btn.classList.add('active');
-  if(id==='create') updateCreateUI();
-  if(id==='settings'){
-    const k=getApiKey();
-    if(k) document.getElementById('api-key-input').value=k.slice(0,12)+'...';
-  }
+  else { document.querySelectorAll('.nav-btn').forEach(b=>{ if(b.textContent.toLowerCase().includes(id.slice(0,3))) b.classList.add('active'); }); }
 }
 
-// ─── Platform / Lang / Pool ───────────────────────────────────────────────────
+// ─── Media Library ────────────────────────────────────────────────────────────
+function handleLibInput(input){
+  Array.from(input.files).forEach(addToLibrary);
+  input.value='';
+}
+function handleLibDrop(e){
+  e.preventDefault();
+  e.currentTarget.style.borderColor='var(--warm-border)';
+  Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')||f.type.startsWith('video/')).forEach(addToLibrary);
+}
+function addToLibrary(file){
+  const id='f'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+  S.mediaLibrary.unshift({id, name:file.name, type:file.type.startsWith('video/')?'video':'photo', rawFile:file});
+  renderLibGrid();
+  updateStats();
+}
+function clearLibrary(){
+  if(!confirm('Clear all files from library?')) return;
+  S.mediaLibrary=[];
+  S.selectedFiles=[];
+  renderLibGrid();
+  renderSelPreview();
+  updateStats();
+}
+function renderLibGrid(){
+  const g=document.getElementById('lib-grid'); if(!g) return;
+  document.getElementById('lib-count').textContent=S.mediaLibrary.length;
+  if(!S.mediaLibrary.length){
+    g.innerHTML='<div style="font-size:12px;color:var(--warm-mid);text-align:center;padding:30px;grid-column:1/-1">No files yet — upload above</div>';
+    return;
+  }
+  g.innerHTML=S.mediaLibrary.map(f=>{
+    const sel=S.selectedFiles.find(x=>x.id===f.id);
+    const idx=S.selectedFiles.indexOf(sel);
+    return `<div class="media-item${sel?' selected':''}" id="lib-${f.id}" onclick="toggleLibItem('${f.id}')">
+      <div style="font-size:22px;margin-bottom:5px">${f.type==='video'?'🎬':'📸'}</div>
+      <div style="font-size:10px;font-weight:500;word-break:break-word;line-height:1.3">${esc(f.name.slice(0,20))}</div>
+      <div style="font-size:9px;color:var(--warm-mid);margin-top:2px">${f.type}</div>
+      ${sel?`<div class="media-badge">${idx+1}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function toggleLibItem(id){
+  const f=S.mediaLibrary.find(x=>x.id===id); if(!f) return;
+  const idx=S.selectedFiles.findIndex(x=>x.id===id);
+  if(idx>=0){ S.selectedFiles.splice(idx,1); }
+  else {
+    if(S.selectedFiles.length>=10){ alert('Maximum 10 files per post.'); return; }
+    S.selectedFiles.push(f);
+  }
+  renderLibGrid();
+  renderSelPreview();
+  updateStats();
+}
+
+// ─── Library Picker Modal ─────────────────────────────────────────────────────
+function openLibPicker(){
+  if(!S.mediaLibrary.length){ alert('No files in library yet — go to 📂 Media Library to upload first.'); return; }
+  S.pickerTemp=[...S.selectedFiles.map(f=>f.id)];
+  renderPickerGrid();
+  document.getElementById('lib-picker-overlay').style.display='flex';
+}
+function closeLibPicker(){
+  document.getElementById('lib-picker-overlay').style.display='none';
+}
+function confirmLibPicker(){
+  S.selectedFiles=S.pickerTemp.map(id=>S.mediaLibrary.find(f=>f.id===id)).filter(Boolean);
+  renderSelPreview();
+  renderLibGrid();
+  updateStats();
+  closeLibPicker();
+}
+function renderPickerGrid(){
+  const g=document.getElementById('picker-grid'); if(!g) return;
+  g.innerHTML=S.mediaLibrary.map(f=>{
+    const idx=S.pickerTemp.indexOf(f.id);
+    const sel=idx>=0;
+    return `<div class="media-item${sel?' selected':''}" id="pick-${f.id}" onclick="togglePickerItem('${f.id}')">
+      <div style="font-size:20px;margin-bottom:4px">${f.type==='video'?'🎬':'📸'}</div>
+      <div style="font-size:9px;word-break:break-word;line-height:1.2">${esc(f.name.slice(0,18))}</div>
+      ${sel?`<div class="media-badge">${idx+1}</div>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('picker-count').textContent=S.pickerTemp.length;
+}
+function togglePickerItem(id){
+  const idx=S.pickerTemp.indexOf(id);
+  if(idx>=0){ S.pickerTemp.splice(idx,1); }
+  else {
+    if(S.pickerTemp.length>=10){ alert('Maximum 10 files.'); return; }
+    S.pickerTemp.push(id);
+  }
+  renderPickerGrid();
+}
+
+// ─── Selected files preview in Create Post ────────────────────────────────────
+function renderSelPreview(){
+  const p=document.getElementById('sel-preview'); if(!p) return;
+  document.getElementById('sel-count').textContent=`(${S.selectedFiles.length}/10)`;
+  if(!S.selectedFiles.length){
+    p.innerHTML='<div style="width:100%;text-align:center;font-size:11px;color:var(--warm-mid);padding:16px 0">Click "Pick from Library" to select files</div>';
+    return;
+  }
+  p.innerHTML=S.selectedFiles.map((f,i)=>`
+    <div style="position:relative;background:var(--surface);border:1px solid var(--warm-border);border-radius:8px;padding:8px 6px;text-align:center;min-width:70px">
+      <div style="font-size:18px;margin-bottom:3px">${f.type==='video'?'🎬':'📸'}</div>
+      <div style="font-size:9px;color:var(--warm-mid);word-break:break-word;line-height:1.2">${esc(f.name.slice(0,14))}</div>
+      <div style="font-size:9px;font-weight:600;color:var(--gold-dark);margin-top:2px">#${i+1}</div>
+      <button onclick="removeSelected(${i})" style="position:absolute;top:2px;right:3px;background:none;border:none;cursor:pointer;font-size:11px;color:var(--warm-mid);line-height:1">×</button>
+    </div>`).join('');
+}
+function removeSelected(idx){
+  S.selectedFiles.splice(idx,1);
+  renderSelPreview();
+  renderLibGrid();
+  updateStats();
+}
+
+// ─── Platform / Lang / PostType / Pool ───────────────────────────────────────
+function activateBtn(btn){ btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold-dark)'; }
+function deactivateBtn(btn){ btn.style.borderColor=''; btn.style.color=''; }
+
 function setPlatform(p){
-  state.platform=p;
+  S.platform=p; setActivePlatform(p);
+}
+function setActivePlatform(p){
   ['ig','fb'].forEach(id=>{
-    const b=document.getElementById('plat-'+id);
+    const b=document.getElementById('plat-'+id); if(!b) return;
     const on=(id==='ig'&&p==='instagram')||(id==='fb'&&p==='facebook');
-    b.style.borderColor=on?'var(--gold)':'var(--warm-border)';
-    b.style.color=on?'var(--gold-dark)':'var(--warm-mid)';
+    on?activateBtn(b):deactivateBtn(b);
   });
 }
-function setLang(l){
-  state.lang=l;
+function setLang(l){ S.lang=l; setActiveLang(l); }
+function setActiveLang(l){
   ['vi+en','vi','en'].forEach(id=>{
     const b=document.getElementById('lang-'+id); if(!b) return;
-    b.style.borderColor=id===l?'var(--gold)':'var(--warm-border)';
-    b.style.color=id===l?'var(--gold-dark)':'var(--warm-mid)';
+    id===l?activateBtn(b):deactivateBtn(b);
+  });
+}
+function setPostType(t){ S.postType=t; setActivePostType(t); }
+function setActivePostType(t){
+  ['single','carousel','reel'].forEach(id=>{
+    const b=document.getElementById('type-'+id); if(!b) return;
+    id===t?activateBtn(b):deactivateBtn(b);
   });
 }
 function togglePool(key,btn){
-  if(state.activePools.has(key)){ state.activePools.delete(key); btn.style.borderColor=''; btn.style.color=''; }
-  else { state.activePools.add(key); btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold-dark)'; }
+  if(S.activePools.has(key)){ S.activePools.delete(key); deactivateBtn(btn); }
+  else { S.activePools.add(key); activateBtn(btn); }
 }
 
-// ─── Drive Search ─────────────────────────────────────────────────────────────
-function handleFileInput(input){
-  const files = Array.from(input.files);
-  files.forEach(addFileToLibrary);
-}
-function handleDrop(e){
-  e.preventDefault();
-  document.getElementById('drop-zone').style.borderColor='var(--warm-border)';
-  document.getElementById('drop-zone').style.background='var(--surface)';
-  const files = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')||f.type.startsWith('video/'));
-  files.forEach(addFileToLibrary);
-}
-function addFileToLibrary(file){
-  const isVideo = file.type.startsWith('video/');
-  const id = Date.now()+'_'+Math.random().toString(36).slice(2);
-  const fileObj = { id, name: file.name, type: isVideo?'video':'photo', rawFile: file };
-  state.mediaLibrary.unshift(fileObj);
-  renderMediaGrid();
-}
-function renderMediaGrid(){
-  const grid = document.getElementById('media-grid'); if(!grid) return;
-  if(!state.mediaLibrary.length){
-    grid.innerHTML='<div style="font-size:13px;color:var(--warm-mid);text-align:center;padding:30px;grid-column:1/-1">No files yet — upload above</div>';
-    return;
-  }
-  grid.innerHTML = state.mediaLibrary.map(f=>`
-    <div onclick="toggleFromLibrary('${f.id}')" id="lib-${f.id}"
-      style="border:2px solid var(--warm-border);border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;background:var(--surface);transition:all .15s;position:relative">
-      <div style="font-size:24px;margin-bottom:5px">${f.type==='video'?'🎬':'📸'}</div>
-      <div style="font-size:10px;font-weight:500;word-break:break-word;line-height:1.3">${f.name.slice(0,22)}</div>
-      <div style="font-size:9px;color:var(--warm-mid);margin-top:2px">${f.type==='video'?'Video':'Photo'}</div>
-      <div id="check-${f.id}" style="position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:var(--gold);color:white;font-size:9px;display:none;align-items:center;justify-content:center;font-weight:700"></div>
-    </div>`).join('');
-}
-function updateLibItemBorder(id){
-  const el=document.getElementById('lib-'+id); if(!el) return;
-  const selected=state.selectedFiles.find(f=>f.id===id);
-  el.style.borderColor=selected?'var(--gold)':'var(--warm-border)';
-  el.style.background=selected?'#FEFBF4':'var(--surface)';
-}
-function toggleFromLibrary(id){
-  const f=state.mediaLibrary.find(x=>x.id===id); if(!f) return;
-  const alreadyIdx=state.selectedFiles.findIndex(x=>x.id===id);
-  if(alreadyIdx>=0){
-    state.selectedFiles.splice(alreadyIdx,1);
-  } else {
-    if(state.selectedFiles.length>=10){ alert('Maximum 10 files per post.'); return; }
-    state.selectedFiles.push(f);
-  }
-  state.selectedFile=state.selectedFiles[0]||null;
-  // Update badge
-  state.mediaLibrary.forEach(mf=>{
-    const idx=state.selectedFiles.findIndex(x=>x.id===mf.id);
-    const check=document.getElementById('check-'+mf.id);
-    if(check){
-      if(idx>=0){ check.style.display='flex'; check.textContent=idx+1; }
-      else { check.style.display='none'; }
-    }
-    updateLibItemBorder(mf.id);
-  });
-  renderSelectedFiles();
-  updateCreateUI();
-}
-function selectFile(dummy, id){ toggleFromLibrary(id); }
-
-// ─── Create UI ────────────────────────────────────────────────────────────────
-function toggleLibPicker(){
-  const picker=document.getElementById('lib-picker');
-  const grid=document.getElementById('lib-picker-grid');
-  if(!picker||!grid) return;
-  const isOpen=picker.style.display!=='none';
-  picker.style.display=isOpen?'none':'block';
-  if(!isOpen){
-    if(!state.mediaLibrary.length){
-      grid.innerHTML='<div style="font-size:11px;color:var(--warm-mid);padding:10px;grid-column:1/-1">No files in library yet — go to 📂 Media Library to upload first.</div>';
-      return;
-    }
-    grid.innerHTML=state.mediaLibrary.map(f=>{
-      const idx=state.selectedFiles.findIndex(x=>x.id===f.id);
-      const selected=idx>=0;
-      return `<div onclick="selectFromPicker('${f.id}')" id="picker-${f.id}"
-        style="border:2px solid ${selected?'var(--gold)':'var(--warm-border)'};border-radius:8px;padding:8px 6px;cursor:pointer;text-align:center;background:${selected?'#FEFBF4':'var(--surface)'};transition:all .15s;position:relative">
-        <div style="font-size:20px;margin-bottom:3px">${f.type==='video'?'🎬':'📸'}</div>
-        <div style="font-size:9px;word-break:break-word;line-height:1.2">${f.name.slice(0,16)}</div>
-        ${selected?`<div style="position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:var(--gold);color:white;font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:700">${idx+1}</div>`:''}
-      </div>`;
-    }).join('');
-  }
-}
-function selectFromPicker(id){ toggleFromLibrary(id); toggleLibPicker(); toggleLibPicker(); }
-  state.postType=t;
-  ['single','carousel','reel'].forEach(id=>{
-    const b=document.getElementById('type-'+id); if(!b) return;
-    b.style.borderColor=id===t?'var(--gold)':'var(--warm-border)';
-    b.style.color=id===t?'var(--gold-dark)':'var(--warm-gray)';
-  });
-}
-
-function addFilesToPost(input){
-  const files=Array.from(input.files);
-  files.forEach(file=>{
-    if(state.selectedFiles.length>=10) return;
-    const id=Date.now()+'_'+Math.random().toString(36).slice(2);
-    state.selectedFiles.push({id, name:file.name, type:file.type.startsWith('video/')?'video':'photo', rawFile:file});
-  });
-  state.selectedFile = state.selectedFiles[0]||null;
-  renderSelectedFiles();
-  updateCreateUI();
-  input.value='';
-}
-
-function renderSelectedFiles(){
-  const grid=document.getElementById('selected-files-grid'); if(!grid) return;
-  const count=document.getElementById('file-count'); if(count) count.textContent=`(${state.selectedFiles.length}/10)`;
-  if(!state.selectedFiles.length){
-    grid.innerHTML='<div style="display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--warm-mid);grid-column:1/-1;padding:20px">Drop files here or click + Add files</div>';
-    return;
-  }
-  grid.innerHTML=state.selectedFiles.map((f,i)=>`
-    <div style="position:relative;border:1px solid var(--warm-border);border-radius:8px;padding:8px 6px;text-align:center;background:var(--surface)">
-      <div style="font-size:20px;margin-bottom:3px">${f.type==='video'?'🎬':'📸'}</div>
-      <div style="font-size:9px;color:var(--warm-mid);word-break:break-word;line-height:1.2">${f.name.slice(0,18)}</div>
-      <div style="font-size:9px;font-weight:500;color:var(--gold-dark);margin-top:2px">#${i+1}</div>
-      <button onclick="removeFromPost(${i})" style="position:absolute;top:2px;right:3px;background:none;border:none;cursor:pointer;font-size:10px;color:var(--warm-mid);padding:0">×</button>
-    </div>`).join('');
-}
-
-function removeFromPost(idx){
-  state.selectedFiles.splice(idx,1);
-  state.selectedFile=state.selectedFiles[0]||null;
-  renderSelectedFiles();
-  updateCreateUI();
-}
-
-function updateCreateUI(){
-  const hasFiles=state.selectedFiles.length>0;
-  document.getElementById('no-file-warn').style.display=hasFiles?'none':'block';
-  const btn=document.getElementById('gen-btn');
-  const pb=document.getElementById('process-btn');
-  btn.disabled=!hasFiles; btn.style.opacity=hasFiles?'1':'.5';
-  if(pb){ pb.disabled=!hasFiles; pb.style.opacity=hasFiles?'1':'.5'; }
-}
-
-// ─── Generate ─────────────────────────────────────────────────────────────────
+// ─── Generate captions ────────────────────────────────────────────────────────
 async function generateContent(){
-  const key=getApiKey();
-  if(!key){ alert('Please add your API key in ⚙️ Settings first.'); return; }
-  if(!state.selectedFiles.length) return;
+  const key=getKey();
+  if(!key){ alert('Please add your Anthropic API key in ⚙️ Settings first.'); return; }
+  if(!S.selectedFiles.length){ alert('Please pick files from the Library first.'); return; }
   const out=document.getElementById('gen-output');
-  out.innerHTML='<div style="text-align:center;padding:40px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px"><div style="font-size:24px;margin-bottom:8px">✨</div><div style="font-size:13px;color:var(--warm-mid)">AI is writing your captions...</div></div>';
-  const poolTags=[...state.activePools].flatMap(k=>POOLS[k]||[]);
-  const langTxt=state.lang==='vi+en'?'in VIETNAMESE and ENGLISH':state.lang==='vi'?'in Vietnamese only':'in English only';
-  const filesSummary = state.selectedFiles.map((f,i)=>`${i+1}. ${f.name} (${f.type})`).join(', ');
-  const isCarousel = state.selectedFiles.length > 1;
+  out.innerHTML=loading('✨','AI is writing your captions...');
+  const poolTags=[...S.activePools].flatMap(k=>POOLS[k]?.tags||[]);
+  const langTxt=S.lang==='vi+en'?'in VIETNAMESE and ENGLISH':S.lang==='vi'?'in Vietnamese only':'in English only';
+  const filesSummary=S.selectedFiles.map((f,i)=>`${i+1}. ${f.name} (${f.type})`).join(', ');
+  const isCarousel=S.selectedFiles.length>1;
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
-        messages:[{role:'user',content:`You are a social media expert for a premium beauty salon at Riviera Point, District 7, Ho Chi Minh City, Vietnam. Audience: women 20–45, Riviera Point residents, expats, Korean community. Services: hair, nails, skincare, makeup.
+        messages:[{role:'user',content:`You are a social media expert for The True Beauty, a premium beauty salon at Riviera Point, District 7, Ho Chi Minh City. Audience: women 20–45, expats, Korean community. Services: hair, nails, skincare, makeup.
+
 Files: ${filesSummary}
-Post type: ${isCarousel ? 'Carousel ('+state.selectedFiles.length+' photos)' : state.postType}
-Platform: ${state.platform==='instagram'?'Instagram':'Facebook'}
+Post type: ${isCarousel?'Carousel ('+S.selectedFiles.length+' photos)':S.postType}
+Platform: ${S.platform==='instagram'?'Instagram':'Facebook'}
 Language: ${langTxt}
 Hashtags to use: ${poolTags.slice(0,15).join(' ')}
+
 Return ONLY valid JSON (no markdown):
-{"captions":[{"lang":"vi","text":"2-3 sentence caption with emojis + CTA","tone":"Warm"},{"lang":"vi","text":"second option","tone":"Elegant"},{"lang":"en","text":"English caption for expats","tone":"Premium"}],"hashtags_caption":["6 tags from the pool for caption"],"hashtags_comment":["8 tags for 1st comment"],"bestTime":"e.g. Wednesday 7:30 PM","tip":"Short SEO tip"}`}]})
+{"captions":[{"lang":"vi","text":"2-3 sentence caption with emojis + CTA","tone":"Warm"},{"lang":"vi","text":"second option","tone":"Elegant"},{"lang":"en","text":"English caption for expats","tone":"Premium"}],"hashtags_caption":["6 tags for caption"],"hashtags_comment":["8 tags for 1st comment"],"bestTime":"e.g. Wednesday 7:30 PM","tip":"Short SEO tip"}`}]})
     });
     const data=await res.json();
     const txt=(data?.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
     const match=txt.match(/\{[\s\S]*\}/);
-    if(match) renderGenOutput(JSON.parse(match[0]));
-    else out.innerHTML='<div class="notice notice-warn">Unexpected response. Please try again.</div>';
-  } catch(e){ out.innerHTML=`<div class="notice notice-warn">Error: ${e.message}</div>`; }
+    if(match) renderCaptions(JSON.parse(match[0]));
+    else out.innerHTML=`<div class="notice notice-warn">Unexpected response. Try again.</div>`;
+  }catch(e){ out.innerHTML=`<div class="notice notice-warn">Error: ${e.message}</div>`; }
 }
 
-function renderGenOutput(g){
+function renderCaptions(g){
   const out=document.getElementById('gen-output');
   const caps=(g.captions||[]).map((c,i)=>`
-    <div class="caption-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:10px;font-weight:500;padding:3px 8px;border-radius:12px;background:${c.lang==='vi'?'#EAF4EE':'#EBF4FF'};color:${c.lang==='vi'?'var(--success)':'var(--info)'}">${c.lang==='vi'?'🇻🇳 VI':'🇬🇧 EN'} · ${c.tone||''}</span>
-        <button class="btn btn-outline btn-sm" onclick="copyText('${escStr(c.text)}',this)">Copy</button>
+    <div class="card-sm" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+        <span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:12px;background:${c.lang==='vi'?'#EAF4EE':'#EBF4FF'};color:${c.lang==='vi'?'var(--success)':'var(--info)'}">${c.lang==='vi'?'🇻🇳 VI':'🇬🇧 EN'} · ${c.tone||''}</span>
+        <button class="btn btn-outline btn-sm" onclick="copyBtn('${escStr(c.text)}',this)">Copy</button>
       </div>
-      <p style="font-size:13px;line-height:1.7">${escHtml(c.text)}</p>
+      <p style="font-size:13px;line-height:1.7">${esc(c.text)}</p>
     </div>`).join('');
   out.innerHTML=`${caps}
     <div class="card-sm" style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
         <span style="font-size:12px;font-weight:500"># Caption (${(g.hashtags_caption||[]).length} tags)</span>
-        <button class="btn btn-outline btn-sm" onclick="copyText('${escStr((g.hashtags_caption||[]).join(' '))}',this)">Copy</button>
+        <button class="btn btn-outline btn-sm" onclick="copyBtn('${escStr((g.hashtags_caption||[]).join(' '))}',this)">Copy</button>
       </div>
       <div class="tag-wrap">${(g.hashtags_caption||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
     </div>
     <div class="card-sm" style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
         <span style="font-size:12px;font-weight:500">💬 1st comment (${(g.hashtags_comment||[]).length} tags)</span>
-        <button class="btn btn-outline btn-sm" onclick="copyText('${escStr((g.hashtags_comment||[]).join(' '))}',this)">Copy</button>
+        <button class="btn btn-outline btn-sm" onclick="copyBtn('${escStr((g.hashtags_comment||[]).join(' '))}',this)">Copy</button>
       </div>
       <div class="tag-wrap">${(g.hashtags_comment||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
     </div>
-    ${g.bestTime?`<div class="notice notice-ok">⏰ <strong>Best time slot:</strong> ${g.bestTime}</div>`:''}
+    ${g.bestTime?`<div class="notice notice-ok">⏰ <strong>Best time:</strong> ${g.bestTime}</div>`:''}
     ${g.tip?`<div class="notice notice-info">💡 ${g.tip}</div>`:''}
     <div><span class="lbl">Schedule this post</span>
       <div style="display:flex;gap:5px;flex-wrap:wrap">
@@ -636,90 +605,125 @@ function renderGenOutput(g){
     </div>`;
 }
 
-function schedulePost(day,caption,btn){
-  state.calendar[day]=state.calendar[day]||[];
-  state.calendar[day].push({platform:state.platform,caption});
-  renderCalendar();
-  btn.textContent='✓ '+day; btn.style.borderColor='var(--success)'; btn.style.color='var(--success)';
-  document.getElementById('stat-posts').textContent=Object.values(state.calendar).flat().length;
+// ─── Process photos ───────────────────────────────────────────────────────────
+async function processPhotos(){
+  const photos=S.selectedFiles.filter(f=>f.type==='photo'&&f.rawFile);
+  if(!photos.length){ alert('No photos with raw files to retouch. Pick files from the Library first.'); return; }
+  const backendUrl=document.getElementById('backend-url')?.value||BACKEND_URL;
+  const out=document.getElementById('gen-output');
+  out.innerHTML=loading('🖼️',`Retouching ${photos.length} photo(s)...`);
+  const results=[];
+  for(let i=0;i<photos.length;i++){
+    const f=photos[i];
+    try{
+      const fd=new FormData();
+      fd.append('file',f.rawFile,f.name);
+      fd.append('generate_caption',i===0?'true':'false');
+      fd.append('platform',S.platform);
+      fd.append('lang',S.lang);
+      const res=await fetch(`${backendUrl}/process-photo`,{method:'POST',body:fd});
+      const data=await res.json();
+      results.push({name:f.name,...data});
+    }catch(e){ results.push({name:f.name,success:false,error:e.message}); }
+  }
+  const ok=results.filter(r=>r.success).length;
+  out.innerHTML=`
+    <div class="notice notice-ok">✅ ${ok}/${photos.length} photo(s) processed</div>
+    ${results.map((r,i)=>`
+      <div class="card-sm" style="margin-bottom:10px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px">${i+1}. ${esc(r.name)}</div>
+        ${r.success?`
+          <div style="font-size:11px;color:var(--warm-mid);margin-bottom:6px">${(r.enhancements_applied||[]).map(e=>`• ${e}`).join(' · ')}</div>
+          <a href="${r.cloudinary_url}" target="_blank" style="font-size:11px;color:var(--info);word-break:break-all">${r.cloudinary_url}</a>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn btn-outline btn-sm" onclick="copyBtn('${r.cloudinary_url}',this)">Copy URL</button>
+            <a href="${r.cloudinary_url}" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">Open ↗</a>
+          </div>`
+        :`<div style="font-size:11px;color:var(--danger)">❌ ${r.error}</div>`}
+      </div>`).join('')}`;
 }
-function renderCalendar(){
-  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{
-    const el=document.getElementById('cal-'+d); if(!el) return;
-    el.innerHTML=(state.calendar[d]||[]).map((p,i)=>`
-      <div class="cal-post">
-        <div style="font-size:9px;margin-bottom:2px">${p.platform==='instagram'?'📸 IG':'👍 FB'}</div>
-        <div style="font-size:10px;color:var(--warm-mid);line-height:1.3">${escHtml(p.caption.slice(0,40))}...</div>
-        <button class="cal-post-rm" onclick="removePost('${d}',${i})">×</button>
-      </div>`).join('')||'<div style="font-size:10px;color:var(--warm-border);text-align:center;margin:auto">—</div>';
-  });
-}
-function removePost(day,idx){ state.calendar[day].splice(idx,1); renderCalendar(); document.getElementById('stat-posts').textContent=Object.values(state.calendar).flat().length; }
 
-async function generateAltText(){
-  const key=getApiKey();
-  if(!key){ alert('Please add your API key in ⚙️ Settings first.'); return; }
-  const fn=document.getElementById('alt-input').value||'salon-photo.jpg';
-  const out=document.getElementById('alt-output'); const el=document.getElementById('alt-text');
-  el.textContent='⏳ Generating...'; out.style.display='block';
+// ─── SEO Pools ────────────────────────────────────────────────────────────────
+function renderSEOPools(){
+  const colors={info:'#EBF4FF',success:'#EAF4EE',warning:'#FEF7E7',danger:'#F9ECEC'};
+  const textColors={info:'var(--info)',success:'var(--success)',warning:'var(--warning)',danger:'var(--danger)'};
+  document.getElementById('seo-pools').innerHTML=Object.entries(POOLS).map(([k,p])=>`
+    <div class="card" style="padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:500">${p.label}</span>
+        <span style="font-size:10px;padding:3px 8px;border-radius:12px;font-weight:500;background:${colors[p.color]};color:${textColors[p.color]}">${k}</span>
+      </div>
+      <div class="tag-wrap" style="margin-bottom:7px">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div style="font-size:11px;color:var(--warm-mid)">📊 ${p.reach}</div>
+    </div>`).join('');
+}
+
+// ─── Alt text ─────────────────────────────────────────────────────────────────
+async function genAltText(){
+  const key=getKey(); if(!key){ alert('Add your API key in Settings first.'); return; }
+  const fn=document.getElementById('alt-inp').value||'salon-photo.jpg';
+  const el=document.getElementById('alt-text');
+  el.textContent='⏳ Generating...';
+  document.getElementById('alt-out').style.display='block';
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,
-        messages:[{role:'user',content:`Generate an SEO alt text for Instagram for this file: "${fn}". Premium beauty salon at Riviera Point, District 7, Ho Chi Minh City. In English, max 125 characters, 1-2 sentences, naturally include 2 local keywords (District 7, Phu My Hung or HCMC). Return ONLY the alt text, no quotes.`}]})
+        messages:[{role:'user',content:`Generate an SEO alt text for Instagram for file: "${fn}". Premium beauty salon, Riviera Point, District 7, HCMC. English, max 125 chars, 1-2 sentences, 2 local keywords. Return ONLY the alt text.`}]})
     });
     const data=await res.json();
     const t=(data?.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
-    el.textContent=t; document.getElementById('alt-len').textContent=`${t.length}/125 characters`;
-  } catch(e){ el.textContent='Error: '+e.message; }
+    el.textContent=t;
+    document.getElementById('alt-len').textContent=`${t.length}/125`;
+  }catch(e){ el.textContent='Error: '+e.message; }
 }
 
-async function processPhoto(){
-  if(!state.selectedFiles.length) return;
-  const photos = state.selectedFiles.filter(f=>f.type==='photo');
-  if(!photos.length){ alert('No photos to retouch — videos are not processed by this feature.'); return; }
-  const out=document.getElementById('gen-output');
-  out.innerHTML=`<div style="text-align:center;padding:30px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px"><div style="font-size:24px;margin-bottom:8px">🖼️</div><div style="font-size:13px;color:var(--warm-mid)">Retouching ${photos.length} photo(s) via backend...</div></div>`;
-  const results=[];
-  for(const f of photos){
-    try{
-      const formData=new FormData();
-      if(!f.rawFile){ results.push({name:f.name,error:'No raw file'}); continue; }
-      formData.append('file',f.rawFile,f.name);
-      formData.append('generate_caption', results.length===0?'true':'false');
-      formData.append('platform',state.platform);
-      formData.append('lang',state.lang);
-      const res=await fetch(`${BACKEND_URL}/process-photo`,{method:'POST',body:formData});
-      const data=await res.json();
-      results.push({name:f.name,...data});
-    } catch(e){ results.push({name:f.name,error:e.message}); }
-  }
-  const successCount=results.filter(r=>r.success).length;
-  out.innerHTML=`
-    <div class="notice notice-ok">✅ ${successCount}/${photos.length} photo(s) retouched successfully</div>
-    ${results.map((r,i)=>`
-      <div class="card-sm" style="margin-bottom:10px">
-        <div style="font-size:12px;font-weight:500;margin-bottom:6px">${i+1}. ${r.name}</div>
-        ${r.success ? `
-          <div style="font-size:11px;color:var(--warm-mid);margin-bottom:6px">${(r.enhancements_applied||[]).map(e=>`• ${e}`).join(' · ')}</div>
-          <a href="${r.cloudinary_url}" target="_blank" style="font-size:11px;color:var(--info);word-break:break-all">${r.cloudinary_url}</a>
-          <div style="display:flex;gap:6px;margin-top:8px">
-            <button class="btn btn-outline btn-sm" onclick="copyText('${r.cloudinary_url}',this)">Copy URL</button>
-            <a href="${r.cloudinary_url}" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">Open ↗</a>
-          </div>
-          ${r.caption&&i===0?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--warm-border)"><div style="font-size:11px;font-weight:500;margin-bottom:4px">📝 Caption</div><p style="font-size:12px;line-height:1.6;color:var(--ink)">${escHtml(r.caption.caption_primary||'')}</p></div>`:''}
-        ` : `<div style="font-size:11px;color:var(--danger)">❌ ${r.error}</div>`}
-      </div>`).join('')}`;
+// ─── Calendar ─────────────────────────────────────────────────────────────────
+function schedulePost(day,caption,btn){
+  S.calendar[day]=S.calendar[day]||[];
+  S.calendar[day].push({platform:S.platform,caption});
+  renderCalendar();
+  btn.textContent='✓ '+day; btn.style.borderColor='var(--success)'; btn.style.color='var(--success)';
+  updateStats();
+}
+function renderCalendar(){
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{
+    const el=document.getElementById('cal-'+d); if(!el) return;
+    el.innerHTML=(S.calendar[d]||[]).map((p,i)=>`
+      <div class="cal-post">
+        <div style="font-size:9px;margin-bottom:1px">${p.platform==='instagram'?'📸':'👍'}</div>
+        <div style="font-size:10px;color:var(--warm-mid);line-height:1.3">${esc(p.caption.slice(0,35))}...</div>
+        <button onclick="removePost('${d}',${i})" style="position:absolute;top:2px;right:3px;background:none;border:none;cursor:pointer;font-size:10px;color:var(--warm-mid);padding:0">×</button>
+      </div>`).join('')||'<div style="font-size:10px;color:var(--warm-border);text-align:center;margin:auto">—</div>';
+  });
+}
+function removePost(day,idx){ S.calendar[day].splice(idx,1); renderCalendar(); updateStats(); }
+
+// ─── Roadmap ──────────────────────────────────────────────────────────────────
+function renderRoadmap(){
+  const done=ROADMAP.filter(r=>r.done).length;
+  document.getElementById('roadmap').innerHTML=`
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--warm-mid);margin-bottom:5px"><span>Progress</span><span>${done}/${ROADMAP.length} ready</span></div>
+    <div style="height:5px;background:var(--surface2);border-radius:3px;margin-bottom:14px"><div style="height:100%;width:${(done/ROADMAP.length*100).toFixed(0)}%;background:linear-gradient(90deg,var(--gold-dark),var(--gold));border-radius:3px"></div></div>
+    ${ROADMAP.map(r=>`<div class="module-item ${r.done?'done':''}"><span style="font-size:15px">${r.done?'✅':'⬜'}</span><div><div style="font-size:13px;font-weight:500">${r.label}</div><div style="font-size:11px;color:var(--warm-mid)">${r.desc}</div></div></div>`).join('')}`;
 }
 
-function copyText(text,btn){ navigator.clipboard.writeText(text).catch(()=>{}); const o=btn.textContent; btn.textContent='✓ Copied'; btn.style.color='var(--success)'; setTimeout(()=>{ btn.textContent=o; btn.style.color=''; },2000); }
-function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function escStr(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,'\\n'); }
+// ─── Stats ────────────────────────────────────────────────────────────────────
+function updateStats(){
+  document.getElementById('stat-posts').textContent=Object.values(S.calendar).flat().length;
+  document.getElementById('stat-lib').textContent=S.mediaLibrary.length;
+}
 
-// Init
-renderCalendar();
-updateApiBadge();
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escStr(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n'); }
+function loading(icon,msg){ return `<div style="text-align:center;padding:40px 16px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px"><div style="font-size:24px;margin-bottom:8px">${icon}</div><div style="font-size:13px;color:var(--warm-mid)">${msg}</div></div>`; }
+function copyBtn(text,btn){
+  navigator.clipboard.writeText(text).catch(()=>{});
+  const o=btn.textContent; btn.textContent='✓ Copied'; btn.style.color='var(--success)';
+  setTimeout(()=>{ btn.textContent=o; btn.style.color=''; },2000);
+}
 </script>
 </body>
 </html>
