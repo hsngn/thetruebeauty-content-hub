@@ -163,8 +163,17 @@
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
               <span class="lbl" style="margin-bottom:0">Selected files <span id="file-count" style="color:var(--gold-dark)">(0/10)</span></span>
-              <button class="btn btn-outline btn-sm" onclick="document.getElementById('create-file-input').click()">+ Add files</button>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-outline btn-sm" onclick="toggleLibPicker()">📂 From Library</button>
+                <button class="btn btn-outline btn-sm" onclick="document.getElementById('create-file-input').click()">+ Upload</button>
+              </div>
               <input id="create-file-input" type="file" accept="image/*,video/*" multiple style="display:none" onchange="addFilesToPost(this)"/>
+            </div>
+
+            <!-- Inline library picker -->
+            <div id="lib-picker" style="display:none;background:var(--surface2);border:1px solid var(--warm-border);border-radius:10px;padding:10px;margin-bottom:8px">
+              <div style="font-size:11px;color:var(--warm-mid);margin-bottom:8px">Click to select · click again to deselect · max 10</div>
+              <div id="lib-picker-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px"></div>
             </div>
             <div id="selected-files-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;min-height:80px;background:var(--surface2);border:1px dashed var(--warm-border);border-radius:10px;padding:8px">
               <div style="display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--warm-mid);grid-column:1/-1">Drop files here or click + Add files</div>
@@ -347,7 +356,7 @@ const BACKEND_URL = "https://thetruebeauty-backend.up.railway.app";
 
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
-  selectedFile: null, selectedFiles: [], postType: 'single', platform: 'instagram', lang: 'vi+en',
+  selectedFile: null, selectedFiles: [], mediaLibrary: [], postType: 'single', platform: 'instagram', lang: 'vi+en',
   activePools: new Set(['A','B','C']),
   calendar: {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]},
 };
@@ -433,26 +442,99 @@ function addFileToLibrary(file){
   const isVideo = file.type.startsWith('video/');
   const id = Date.now()+'_'+Math.random().toString(36).slice(2);
   const fileObj = { id, name: file.name, type: isVideo?'video':'photo', rawFile: file };
-  const grid = document.getElementById('media-grid');
-  const div = document.createElement('div');
-  div.style.cssText='border:1px solid var(--warm-border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;background:var(--surface);transition:border-color .15s';
-  div.onmouseover=()=>div.style.borderColor='var(--gold)';
-  div.onmouseout=()=>div.style.borderColor='var(--warm-border)';
-  div.onclick=()=>selectFile(fileObj);
-  div.innerHTML=`<div style="font-size:26px;margin-bottom:6px">${isVideo?'🎬':'📸'}</div><div style="font-size:11px;font-weight:500;word-break:break-word;line-height:1.3">${file.name.slice(0,28)}</div><div style="font-size:10px;color:var(--warm-mid);margin-top:3px">${isVideo?'Video':'Photo'}</div>`;
-  grid.prepend(div);
+  state.mediaLibrary.unshift(fileObj);
+  renderMediaGrid();
 }
-function selectFile(f){
-  if(state.selectedFiles.length>=10){ alert('Maximum 10 files per post.'); return; }
-  if(!state.selectedFiles.find(x=>x.id===f.id)) state.selectedFiles.push(f);
-  state.selectedFile=state.selectedFiles[0];
-  showTab('create',document.querySelectorAll('.nav-btn')[2]);
+function renderMediaGrid(){
+  const grid = document.getElementById('media-grid'); if(!grid) return;
+  if(!state.mediaLibrary.length){
+    grid.innerHTML='<div style="font-size:13px;color:var(--warm-mid);text-align:center;padding:30px;grid-column:1/-1">No files yet — upload above</div>';
+    return;
+  }
+  grid.innerHTML = state.mediaLibrary.map(f=>`
+    <div onclick="selectFile(${JSON.stringify(f).replace(/"/g,'&quot;').replace(/rawFile/,'_skip')},'${f.id}')"
+      id="lib-${f.id}"
+      style="border:2px solid var(--warm-border);border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;background:var(--surface);transition:all .15s;position:relative"
+      onmouseover="this.style.borderColor='var(--gold)'" onmouseout="updateLibItemBorder('${f.id}')">
+      <div style="font-size:24px;margin-bottom:5px">${f.type==='video'?'🎬':'📸'}</div>
+      <div style="font-size:10px;font-weight:500;word-break:break-word;line-height:1.3">${f.name.slice(0,22)}</div>
+      <div style="font-size:9px;color:var(--warm-mid);margin-top:2px">${f.type==='video'?'Video':'Photo'}</div>
+      <div id="check-${f.id}" style="position:absolute;top:5px;right:5px;width:16px;height:16px;border-radius:50%;background:var(--gold);color:white;font-size:9px;display:none;align-items:center;justify-content:center;font-weight:700"></div>
+    </div>`).join('');
+}
+function updateLibItemBorder(id){
+  const el=document.getElementById('lib-'+id); if(!el) return;
+  const selected=state.selectedFiles.find(f=>f.id===id);
+  el.style.borderColor=selected?'var(--gold)':'var(--warm-border)';
+}
+function selectFile(dummy, id){
+  // Find real file object with rawFile from mediaLibrary
+  const f = state.mediaLibrary.find(x=>x.id===id); if(!f) return;
+  const alreadyIdx = state.selectedFiles.findIndex(x=>x.id===id);
+  if(alreadyIdx>=0){
+    // Deselect
+    state.selectedFiles.splice(alreadyIdx,1);
+  } else {
+    if(state.selectedFiles.length>=10){ alert('Maximum 10 files per post.'); return; }
+    state.selectedFiles.push(f);
+  }
+  state.selectedFile=state.selectedFiles[0]||null;
+  // Update badge
+  const check=document.getElementById('check-'+id);
+  const idx=state.selectedFiles.findIndex(x=>x.id===id);
+  if(check){
+    if(idx>=0){ check.style.display='flex'; check.textContent=idx+1; }
+    else { check.style.display='none'; }
+  }
+  updateLibItemBorder(id);
+  // Update all badges numbers
+  state.selectedFiles.forEach((sf,i)=>{
+    const c=document.getElementById('check-'+sf.id);
+    if(c){ c.textContent=i+1; }
+  });
   renderSelectedFiles();
   updateCreateUI();
 }
 
 // ─── Create UI ────────────────────────────────────────────────────────────────
-function setPostType(t){
+function toggleLibPicker(){
+  const picker=document.getElementById('lib-picker');
+  const grid=document.getElementById('lib-picker-grid');
+  if(!picker||!grid) return;
+  const isOpen=picker.style.display!=='none';
+  picker.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    if(!state.mediaLibrary.length){
+      grid.innerHTML='<div style="font-size:11px;color:var(--warm-mid);padding:10px;grid-column:1/-1">No files in library yet — go to 📂 Media Library to upload first.</div>';
+      return;
+    }
+    grid.innerHTML=state.mediaLibrary.map(f=>{
+      const idx=state.selectedFiles.findIndex(x=>x.id===f.id);
+      const selected=idx>=0;
+      return `<div onclick="selectFromPicker('${f.id}')" id="picker-${f.id}"
+        style="border:2px solid ${selected?'var(--gold)':'var(--warm-border)'};border-radius:8px;padding:8px 6px;cursor:pointer;text-align:center;background:${selected?'#FEFBF4':'var(--surface)'};transition:all .15s;position:relative">
+        <div style="font-size:20px;margin-bottom:3px">${f.type==='video'?'🎬':'📸'}</div>
+        <div style="font-size:9px;word-break:break-word;line-height:1.2">${f.name.slice(0,16)}</div>
+        ${selected?`<div style="position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:var(--gold);color:white;font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:700">${idx+1}</div>`:''}
+      </div>`;
+    }).join('');
+  }
+}
+function selectFromPicker(id){
+  const f=state.mediaLibrary.find(x=>x.id===id); if(!f) return;
+  const alreadyIdx=state.selectedFiles.findIndex(x=>x.id===id);
+  if(alreadyIdx>=0){
+    state.selectedFiles.splice(alreadyIdx,1);
+  } else {
+    if(state.selectedFiles.length>=10){ alert('Maximum 10 files.'); return; }
+    state.selectedFiles.push(f);
+  }
+  state.selectedFile=state.selectedFiles[0]||null;
+  // Refresh picker grid
+  toggleLibPicker(); toggleLibPicker();
+  renderSelectedFiles();
+  updateCreateUI();
+}
   state.postType=t;
   ['single','carousel','reel'].forEach(id=>{
     const b=document.getElementById('type-'+id); if(!b) return;
