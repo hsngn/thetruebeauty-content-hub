@@ -155,14 +155,32 @@
     <div id="tab-create" style="display:none">
       <div class="page-stripe"></div>
       <h2 style="font-size:18px;margin-bottom:16px">✨ Create a Post</h2>
-      <div id="no-file-warn" class="notice notice-warn" style="display:none">⚠️ No file selected — go to <strong>Media Library</strong> to pick a media file</div>
+      <div id="no-file-warn" class="notice notice-warn" style="display:none">⚠️ No files selected — go to <strong>Media Library</strong> to upload media first</div>
       <div class="grid2">
         <div style="display:flex;flex-direction:column;gap:14px">
-          <div id="file-card" class="card-sm" style="text-align:center;display:none">
-            <div style="font-size:28px;margin-bottom:6px" id="file-icon">📸</div>
-            <div style="font-size:12px;font-weight:500" id="file-name">—</div>
-            <div style="font-size:11px;color:var(--warm-mid);margin-top:2px" id="file-type">—</div>
+
+          <!-- Multi-file selector -->
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span class="lbl" style="margin-bottom:0">Selected files <span id="file-count" style="color:var(--gold-dark)">(0/10)</span></span>
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('create-file-input').click()">+ Add files</button>
+              <input id="create-file-input" type="file" accept="image/*,video/*" multiple style="display:none" onchange="addFilesToPost(this)"/>
+            </div>
+            <div id="selected-files-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;min-height:80px;background:var(--surface2);border:1px dashed var(--warm-border);border-radius:10px;padding:8px">
+              <div style="display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--warm-mid);grid-column:1/-1">Drop files here or click + Add files</div>
+            </div>
+            <div style="font-size:11px;color:var(--warm-mid);margin-top:5px">Up to 10 photos/videos · drag to reorder</div>
           </div>
+
+          <div>
+            <span class="lbl">Post type</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm" id="type-single" onclick="setPostType('single')" style="border-color:var(--gold);color:var(--gold-dark)">📷 Single</button>
+              <button class="btn btn-outline btn-sm" id="type-carousel" onclick="setPostType('carousel')">🎠 Carousel (2–10)</button>
+              <button class="btn btn-outline btn-sm" id="type-reel" onclick="setPostType('reel')">🎬 Reel</button>
+            </div>
+          </div>
+
           <div>
             <span class="lbl">Platform</span>
             <div style="display:flex;gap:8px">
@@ -188,12 +206,12 @@
             </div>
           </div>
           <button class="btn btn-gold" id="gen-btn" onclick="generateContent()" disabled style="width:100%;opacity:.5">✨ Generate caption + hashtags</button>
-          <button class="btn btn-outline" id="process-btn" onclick="processPhoto()" disabled style="width:100%;opacity:.5">🖼️ Retouch photo via backend</button>
+          <button class="btn btn-outline" id="process-btn" onclick="processPhoto()" disabled style="width:100%;opacity:.5">🖼️ Retouch & upload all photos</button>
         </div>
         <div id="gen-output">
           <div style="text-align:center;padding:40px 16px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px">
             <div style="font-size:28px;margin-bottom:8px">🤖</div>
-            <div style="font-size:13px;color:var(--warm-mid)">Select a file and click Generate</div>
+            <div style="font-size:13px;color:var(--warm-mid)">Add files and click Generate</div>
           </div>
         </div>
       </div>
@@ -329,7 +347,7 @@ const BACKEND_URL = "https://thetruebeauty-backend.up.railway.app";
 
 // ─── State ────────────────────────────────────────────────────────────────────
 const state = {
-  selectedFile: null, platform: 'instagram', lang: 'vi+en',
+  selectedFile: null, selectedFiles: [], postType: 'single', platform: 'instagram', lang: 'vi+en',
   activePools: new Set(['A','B','C']),
   calendar: {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]},
 };
@@ -424,43 +442,89 @@ function addFileToLibrary(file){
   div.innerHTML=`<div style="font-size:26px;margin-bottom:6px">${isVideo?'🎬':'📸'}</div><div style="font-size:11px;font-weight:500;word-break:break-word;line-height:1.3">${file.name.slice(0,28)}</div><div style="font-size:10px;color:var(--warm-mid);margin-top:3px">${isVideo?'Video':'Photo'}</div>`;
   grid.prepend(div);
 }
-function selectFile(f){ state.selectedFile=f; showTab('create',document.querySelectorAll('.nav-btn')[2]); }
+function selectFile(f){
+  if(state.selectedFiles.length>=10){ alert('Maximum 10 files per post.'); return; }
+  if(!state.selectedFiles.find(x=>x.id===f.id)) state.selectedFiles.push(f);
+  state.selectedFile=state.selectedFiles[0];
+  showTab('create',document.querySelectorAll('.nav-btn')[2]);
+  renderSelectedFiles();
+  updateCreateUI();
+}
 
 // ─── Create UI ────────────────────────────────────────────────────────────────
-function updateCreateUI(){
-  const f=state.selectedFile;
-  document.getElementById('no-file-warn').style.display=f?'none':'block';
-  document.getElementById('file-card').style.display=f?'block':'none';
-  const btn=document.getElementById('gen-btn');
-  if(f){
-    document.getElementById('file-icon').textContent=f.type==='video'?'🎬':'📸';
-    document.getElementById('file-name').textContent=f.name;
-    document.getElementById('file-type').textContent=f.type==='video'?'Video':'Photo';
-    btn.disabled=false; btn.style.opacity='1';
-    const pb=document.getElementById('process-btn');
-    if(pb){ pb.disabled=false; pb.style.opacity='1'; }
-  } else { btn.disabled=true; btn.style.opacity='.5';
-    const pb=document.getElementById('process-btn');
-    if(pb){ pb.disabled=true; pb.style.opacity='.5'; }
+function setPostType(t){
+  state.postType=t;
+  ['single','carousel','reel'].forEach(id=>{
+    const b=document.getElementById('type-'+id); if(!b) return;
+    b.style.borderColor=id===t?'var(--gold)':'var(--warm-border)';
+    b.style.color=id===t?'var(--gold-dark)':'var(--warm-gray)';
+  });
+}
+
+function addFilesToPost(input){
+  const files=Array.from(input.files);
+  files.forEach(file=>{
+    if(state.selectedFiles.length>=10) return;
+    const id=Date.now()+'_'+Math.random().toString(36).slice(2);
+    state.selectedFiles.push({id, name:file.name, type:file.type.startsWith('video/')?'video':'photo', rawFile:file});
+  });
+  state.selectedFile = state.selectedFiles[0]||null;
+  renderSelectedFiles();
+  updateCreateUI();
+  input.value='';
+}
+
+function renderSelectedFiles(){
+  const grid=document.getElementById('selected-files-grid'); if(!grid) return;
+  const count=document.getElementById('file-count'); if(count) count.textContent=`(${state.selectedFiles.length}/10)`;
+  if(!state.selectedFiles.length){
+    grid.innerHTML='<div style="display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--warm-mid);grid-column:1/-1;padding:20px">Drop files here or click + Add files</div>';
+    return;
   }
+  grid.innerHTML=state.selectedFiles.map((f,i)=>`
+    <div style="position:relative;border:1px solid var(--warm-border);border-radius:8px;padding:8px 6px;text-align:center;background:var(--surface)">
+      <div style="font-size:20px;margin-bottom:3px">${f.type==='video'?'🎬':'📸'}</div>
+      <div style="font-size:9px;color:var(--warm-mid);word-break:break-word;line-height:1.2">${f.name.slice(0,18)}</div>
+      <div style="font-size:9px;font-weight:500;color:var(--gold-dark);margin-top:2px">#${i+1}</div>
+      <button onclick="removeFromPost(${i})" style="position:absolute;top:2px;right:3px;background:none;border:none;cursor:pointer;font-size:10px;color:var(--warm-mid);padding:0">×</button>
+    </div>`).join('');
+}
+
+function removeFromPost(idx){
+  state.selectedFiles.splice(idx,1);
+  state.selectedFile=state.selectedFiles[0]||null;
+  renderSelectedFiles();
+  updateCreateUI();
+}
+
+function updateCreateUI(){
+  const hasFiles=state.selectedFiles.length>0;
+  document.getElementById('no-file-warn').style.display=hasFiles?'none':'block';
+  const btn=document.getElementById('gen-btn');
+  const pb=document.getElementById('process-btn');
+  btn.disabled=!hasFiles; btn.style.opacity=hasFiles?'1':'.5';
+  if(pb){ pb.disabled=!hasFiles; pb.style.opacity=hasFiles?'1':'.5'; }
 }
 
 // ─── Generate ─────────────────────────────────────────────────────────────────
 async function generateContent(){
   const key=getApiKey();
   if(!key){ alert('Please add your API key in ⚙️ Settings first.'); return; }
-  if(!state.selectedFile) return;
+  if(!state.selectedFiles.length) return;
   const out=document.getElementById('gen-output');
   out.innerHTML='<div style="text-align:center;padding:40px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px"><div style="font-size:24px;margin-bottom:8px">✨</div><div style="font-size:13px;color:var(--warm-mid)">AI is writing your captions...</div></div>';
   const poolTags=[...state.activePools].flatMap(k=>POOLS[k]||[]);
   const langTxt=state.lang==='vi+en'?'in VIETNAMESE and ENGLISH':state.lang==='vi'?'in Vietnamese only':'in English only';
+  const filesSummary = state.selectedFiles.map((f,i)=>`${i+1}. ${f.name} (${f.type})`).join(', ');
+  const isCarousel = state.selectedFiles.length > 1;
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
         messages:[{role:'user',content:`You are a social media expert for a premium beauty salon at Riviera Point, District 7, Ho Chi Minh City, Vietnam. Audience: women 20–45, Riviera Point residents, expats, Korean community. Services: hair, nails, skincare, makeup.
-File: "${state.selectedFile.name}" (${state.selectedFile.type||'photo'})
+Files: ${filesSummary}
+Post type: ${isCarousel ? 'Carousel ('+state.selectedFiles.length+' photos)' : state.postType}
 Platform: ${state.platform==='instagram'?'Instagram':'Facebook'}
 Language: ${langTxt}
 Hashtags to use: ${poolTags.slice(0,15).join(' ')}
@@ -549,40 +613,41 @@ async function generateAltText(){
 }
 
 async function processPhoto(){
-  if(!state.selectedFile) return;
+  if(!state.selectedFiles.length) return;
+  const photos = state.selectedFiles.filter(f=>f.type==='photo');
+  if(!photos.length){ alert('No photos to retouch — videos are not processed by this feature.'); return; }
   const out=document.getElementById('gen-output');
-  out.innerHTML='<div style="text-align:center;padding:40px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px"><div style="font-size:24px;margin-bottom:8px">🖼️</div><div style="font-size:13px;color:var(--warm-mid)">Retouching photo via backend...</div></div>';
-  try{
-    const formData = new FormData();
-    const rawFile = state.selectedFile.rawFile;
-    if(!rawFile){ out.innerHTML='<div class="notice notice-warn">❌ Please upload a file from Media Library first.</div>'; return; }
-    formData.append('file', rawFile, state.selectedFile.name);
-    formData.append('generate_caption','true');
-    formData.append('platform', state.platform);
-    formData.append('lang', state.lang);
-    const res = await fetch(`${BACKEND_URL}/process-photo`, {method:'POST', body: formData});
-    const data = await res.json();
-    if(data.success){
-      out.innerHTML=`
-        <div class="notice notice-ok">✅ Photo processed successfully!</div>
-        <div class="card-sm" style="margin-bottom:10px">
-          <div style="font-size:12px;font-weight:500;margin-bottom:8px">☁️ Cloudinary URL</div>
-          <a href="${data.cloudinary_url}" target="_blank" style="font-size:11px;color:var(--info);word-break:break-all">${data.cloudinary_url}</a>
-          <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="copyText('${data.cloudinary_url}',this)">Copy URL</button>
-        </div>
-        <div class="card-sm" style="margin-bottom:10px">
-          <div style="font-size:12px;font-weight:500;margin-bottom:6px">✨ Enhancements applied</div>
-          ${(data.enhancements_applied||[]).map(e=>`<div style="font-size:11px;color:var(--warm-mid);margin-bottom:3px">• ${e}</div>`).join('')}
-        </div>
-        ${data.caption?`<div class="card-sm">
-          <div style="font-size:12px;font-weight:500;margin-bottom:8px">📝 Generated caption</div>
-          <p style="font-size:13px;line-height:1.7">${escHtml(data.caption.caption_primary||'')}</p>
-          <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="copyText('${escStr(data.caption.caption_primary||'')}',this)">Copy</button>
-        </div>`:''}`;
-    } else {
-      out.innerHTML=`<div class="notice notice-warn">❌ Error: ${data.error}</div>`;
-    }
-  } catch(e){ out.innerHTML=`<div class="notice notice-warn">❌ Connection error: ${e.message}</div>`; }
+  out.innerHTML=`<div style="text-align:center;padding:30px;background:var(--surface);border:1px dashed var(--warm-border);border-radius:12px"><div style="font-size:24px;margin-bottom:8px">🖼️</div><div style="font-size:13px;color:var(--warm-mid)">Retouching ${photos.length} photo(s) via backend...</div></div>`;
+  const results=[];
+  for(const f of photos){
+    try{
+      const formData=new FormData();
+      if(!f.rawFile){ results.push({name:f.name,error:'No raw file'}); continue; }
+      formData.append('file',f.rawFile,f.name);
+      formData.append('generate_caption', results.length===0?'true':'false');
+      formData.append('platform',state.platform);
+      formData.append('lang',state.lang);
+      const res=await fetch(`${BACKEND_URL}/process-photo`,{method:'POST',body:formData});
+      const data=await res.json();
+      results.push({name:f.name,...data});
+    } catch(e){ results.push({name:f.name,error:e.message}); }
+  }
+  const successCount=results.filter(r=>r.success).length;
+  out.innerHTML=`
+    <div class="notice notice-ok">✅ ${successCount}/${photos.length} photo(s) retouched successfully</div>
+    ${results.map((r,i)=>`
+      <div class="card-sm" style="margin-bottom:10px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px">${i+1}. ${r.name}</div>
+        ${r.success ? `
+          <div style="font-size:11px;color:var(--warm-mid);margin-bottom:6px">${(r.enhancements_applied||[]).map(e=>`• ${e}`).join(' · ')}</div>
+          <a href="${r.cloudinary_url}" target="_blank" style="font-size:11px;color:var(--info);word-break:break-all">${r.cloudinary_url}</a>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn btn-outline btn-sm" onclick="copyText('${r.cloudinary_url}',this)">Copy URL</button>
+            <a href="${r.cloudinary_url}" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">Open ↗</a>
+          </div>
+          ${r.caption&&i===0?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--warm-border)"><div style="font-size:11px;font-weight:500;margin-bottom:4px">📝 Caption</div><p style="font-size:12px;line-height:1.6;color:var(--ink)">${escHtml(r.caption.caption_primary||'')}</p></div>`:''}
+        ` : `<div style="font-size:11px;color:var(--danger)">❌ ${r.error}</div>`}
+      </div>`).join('')}`;
 }
 
 function copyText(text,btn){ navigator.clipboard.writeText(text).catch(()=>{}); const o=btn.textContent; btn.textContent='✓ Copied'; btn.style.color='var(--success)'; setTimeout(()=>{ btn.textContent=o; btn.style.color=''; },2000); }
