@@ -191,11 +191,12 @@ h2{font-family:'Playfair Display',serif}
 
       <!-- Language -->
       <div>
-        <span class="lbl">Caption language</span>
+        <span class="lbl">Caption languages <span style="color:var(--gold-dark);font-size:9px">(multi-select)</span></span>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-outline btn-sm" id="lang-vi+en" onclick="setLang('vi+en')">🇻🇳+🇬🇧 VI+EN</button>
-          <button class="btn btn-outline btn-sm" id="lang-vi" onclick="setLang('vi')">🇻🇳 Vietnamese</button>
-          <button class="btn btn-outline btn-sm" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
+          <button class="btn btn-outline btn-sm lang-btn" data-lang="vi" onclick="toggleLang('vi',this)">🇻🇳 Vietnamese</button>
+          <button class="btn btn-outline btn-sm lang-btn" data-lang="en" onclick="toggleLang('en',this)">🇬🇧 English</button>
+          <button class="btn btn-outline btn-sm lang-btn" data-lang="ko" onclick="toggleLang('ko',this)">🇰🇷 Korean</button>
+          <button class="btn btn-outline btn-sm lang-btn" data-lang="zh" onclick="toggleLang('zh',this)">🇨🇳 Chinese</button>
         </div>
       </div>
 
@@ -339,7 +340,7 @@ const S = {
   pickerTemp: [],         // temp selection in modal
   postType: 'single',
   platform: 'instagram',
-  lang: 'vi+en',
+  activeLangs: new Set(['vi','en']),
   activePools: new Set(['A','B','C']),
   calendar: {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]},
 };
@@ -351,8 +352,11 @@ const S = {
   renderSEOPools();
   renderRoadmap();
   setActivePlatform('instagram');
-  setActiveLang('vi+en');
   setActivePostType('single');
+  // Activate default languages
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    if(S.activeLangs.has(b.dataset.lang)) activateBtn(b);
+  });
   document.querySelectorAll('.pool-btn').forEach(b=>{
     if(S.activePools.has(b.dataset.pool)) activateBtn(b);
   });
@@ -524,6 +528,14 @@ function setActiveLang(l){
     id===l?activateBtn(b):deactivateBtn(b);
   });
 }
+function toggleLang(lang,btn){
+  if(S.activeLangs.has(lang)){
+    if(S.activeLangs.size===1){ return; } // keep at least 1
+    S.activeLangs.delete(lang); deactivateBtn(btn);
+  } else {
+    S.activeLangs.add(lang); activateBtn(btn);
+  }
+}
 function setPostType(t){ S.postType=t; setActivePostType(t); }
 function setActivePostType(t){
   ['single','carousel','reel'].forEach(id=>{
@@ -544,7 +556,10 @@ async function generateContent(){
   const out=document.getElementById('gen-output');
   out.innerHTML=loading('✨','AI is writing your captions...');
   const poolTags=[...S.activePools].flatMap(k=>POOLS[k]?.tags||[]);
-  const langTxt=S.lang==='vi+en'?'in VIETNAMESE and ENGLISH':S.lang==='vi'?'in Vietnamese only':'in English only';
+  const langMap={vi:'Vietnamese',en:'English',ko:'Korean',zh:'Chinese'};
+  const langNames=[...S.activeLangs].map(l=>langMap[l]).join(', ');
+  const langTxt=`in these languages: ${langNames}`;
+  const captionsNeeded=[...S.activeLangs].map(l=>`{"lang":"${l}","text":"2-3 sentence caption with emojis + CTA in ${langMap[l]}","tone":"Warm"}`).join(',');
   const filesSummary=S.selectedFiles.map((f,i)=>`${i+1}. ${f.name} (${f.type})`).join(', ');
   const isCarousel=S.selectedFiles.length>1;
   try{
@@ -557,11 +572,11 @@ async function generateContent(){
 Files: ${filesSummary}
 Post type: ${isCarousel?'Carousel ('+S.selectedFiles.length+' photos)':S.postType}
 Platform: ${S.platform==='instagram'?'Instagram':'Facebook'}
-Language: ${langTxt}
+Languages required: ${langNames}
 Hashtags to use: ${poolTags.slice(0,15).join(' ')}
 
 Return ONLY valid JSON (no markdown):
-{"captions":[{"lang":"vi","text":"2-3 sentence caption with emojis + CTA","tone":"Warm"},{"lang":"vi","text":"second option","tone":"Elegant"},{"lang":"en","text":"English caption for expats","tone":"Premium"}],"hashtags_caption":["6 tags for caption"],"hashtags_comment":["8 tags for 1st comment"],"bestTime":"e.g. Wednesday 7:30 PM","tip":"Short SEO tip"}`}]})
+{"captions":[${captionsNeeded}],"hashtags_caption":["6 tags for caption"],"hashtags_comment":["8 tags for 1st comment"],"bestTime":"e.g. Wednesday 7:30 PM","tip":"Short SEO tip"}`}]})
     });
     const data=await res.json();
     const txt=(data?.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
@@ -573,10 +588,13 @@ Return ONLY valid JSON (no markdown):
 
 function renderCaptions(g){
   const out=document.getElementById('gen-output');
+  const langFlags={vi:'🇻🇳 VI',en:'🇬🇧 EN',ko:'🇰🇷 KO',zh:'🇨🇳 ZH'};
+  const langColors={vi:'#EAF4EE',en:'#EBF4FF',ko:'#FEF7E7',zh:'#F9ECEC'};
+  const langTextColors={vi:'var(--success)',en:'var(--info)',ko:'var(--warning)',zh:'var(--danger)'};
   const caps=(g.captions||[]).map((c,i)=>`
     <div class="card-sm" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
-        <span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:12px;background:${c.lang==='vi'?'#EAF4EE':'#EBF4FF'};color:${c.lang==='vi'?'var(--success)':'var(--info)'}">${c.lang==='vi'?'🇻🇳 VI':'🇬🇧 EN'} · ${c.tone||''}</span>
+        <span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:12px;background:${langColors[c.lang]||'#EBF4FF'};color:${langTextColors[c.lang]||'var(--info)'}">${langFlags[c.lang]||c.lang} · ${c.tone||''}</span>
         <button class="btn btn-outline btn-sm" onclick="copyBtn('${escStr(c.text)}',this)">Copy</button>
       </div>
       <p style="font-size:13px;line-height:1.7">${esc(c.text)}</p>
